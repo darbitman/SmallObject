@@ -1,3 +1,6 @@
+#pragma once
+#include <cstdlib>
+
 class Chunk {
 public:
   void Init(size_t blockSize, unsigned char numBlocks);

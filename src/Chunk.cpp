@@ -1,4 +1,5 @@
 #include "Chunk.h"
+#include <assert.h>
 
 
 void Chunk::Init(size_t blockSize, unsigned char blocks) {
@@ -7,7 +8,8 @@ void Chunk::Init(size_t blockSize, unsigned char blocks) {
   blocksAvailable_ = blocks;
   unsigned char* dataPtr = pData_;
   for (unsigned char i = 0; i != blocks; dataPtr += blockSize) {
-    *dataPtr = ++i;                               // assign first byte of each unused block to index of the next unused block
+    // assign first byte of each unused block to index of the next unused block
+    *dataPtr = ++i;
   }
 }
 
@@ -25,4 +27,13 @@ void* Chunk::Allocate(size_t blockSize) {
 
 
 void Chunk::Deallocate(void* p, size_t blockSize) {
+  assert(p >= pData_);
+  unsigned char* toReleasePtr = static_cast<unsigned char*>(p);
+  // Alignment check
+  assert((toReleasePtr - pData_) % blockSize == 0);
+  *toReleasePtr = firstAvailableBlock_;
+  firstAvailableBlock_ = static_cast<unsigned char>((toReleasePtr - pData_) / blockSize);
+  // Truncation check
+  assert(firstAvailableBlock_ == (toReleasePtr - pData_) / blockSize);
+  ++blocksAvailable_;
 }
