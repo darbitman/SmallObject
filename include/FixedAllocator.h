@@ -5,6 +5,9 @@
 
 class FixedAllocator {
 public:
+  FixedAllocator();
+  void* Allocate();
+  void Deallocate(void* p);
 private:
   size_t blockSize_;
   unsigned char numBlocks_;
