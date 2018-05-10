@@ -1,9 +1,25 @@
 #include "FixedAllocator.h"
 #include <assert.h>
 
-FixedAllocator::FixedAllocator() {
-  pAllocChunk_ = 0;
-  pDeallocChunk_ = 0;
+FixedAllocator::FixedAllocator(size_t blockSize) : 
+  blockSize_(blockSize), pAllocChunk_(0), pDeallocChunk_(0) {
+    assert(blockSize > 0);
+    size_t numBlocks = DEFAULT_CHUNK_SIZE / blockSize;
+    if (numBlocks > UCHAR_MAX) {
+      numBlocks = UCHAR_MAX;
+    }
+    else if (numBlocks == 0) {
+      numBlocks = 8 * blockSize;
+    }
+    numBlocks_ = static_cast<unsigned char>(numBlocks);
+    assert(numBlocks_ == numBlocks);
+}
+
+
+FixedAllocator::~FixedAllocator() {
+  for (Chunks::iterator itr = chunks_.begin(); itr != chunks_.end(); itr++) {
+    delete &(*itr);
+  }
 }
 
 
@@ -51,4 +67,9 @@ void FixedAllocator::Deallocate(void* p) {
       return;
     }
   }
+}
+
+
+size_t FixedAllocator::getBlockSize() const {
+  return blockSize_;
 }
