@@ -51,6 +51,13 @@ void* FixedAllocator::Allocate() {
 
 
 void FixedAllocator::Deallocate(void* p) {
+  assert(!chunks_.empty());
+
+  // linearly search for chunk to which p belongs starting from p and searching outward
+  pDeallocChunk_ = findNearby(p);
+  assert(pDeallocChunk_);
+  DoDeallocate(p);
+  /*
   // check most recent deallocated Chunk first
   // check if p lies between first block address and last block address
   if (p >= pDeallocChunk_->pData_ && p <= (pDeallocChunk_->pData_ + blockSize_ * numBlocks_)) {
@@ -67,9 +74,58 @@ void FixedAllocator::Deallocate(void* p) {
       return;
     }
   }
+  */
 }
 
 
 size_t FixedAllocator::getBlockSize() const {
   return blockSize_;
+}
+
+
+Chunk* FixedAllocator::findNearby(void* p) {
+  assert(!chunks_.empty());
+  assert(pDeallocChunk_);
+  const size_t chunkLength = numBlocks_ * blockSize_;
+  Chunk* lo = pDeallocChunk_;
+  Chunk* hi = pDeallocChunk_ + 1;
+  Chunk* loBound = &chunks_.front();
+  Chunk* hiBound = &chunks_.back() + 1;
+
+  // special case: pDeallocChunk_ is the last in the vector
+  if (hi == hiBound) {
+    hi = 0;
+  }
+
+  for (;;) {
+    if (lo) {
+      // p lies in the address of chunk pointed to by lo
+      if (p >= lo->pData_ && p < lo->pData_ + chunkLength) {
+        return lo;
+      }
+      if (lo == loBound) {
+        lo = 0;
+      }
+      else {
+        --lo;
+      }
+    }
+    if (hi) {
+      if (p >= hi->pData_ && p < hi->pData_ + chunkLength) {
+        return hi;
+      }
+      if (++hi == hiBound) {
+        hi = 0;
+      }
+    }
+  }
+  // should never reach here
+  return 0;
+}
+
+
+void FixedAllocator::DoDeallocate(void *p) {
+  assert(p >= pDeallocChunk_->pData_);
+  assert(p < (pDeallocChunk_->pData_ + numBlocks_ * blockSize_));
+
 }

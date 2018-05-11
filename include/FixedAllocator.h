@@ -21,4 +21,6 @@ private:
   Chunks chunks_;
   Chunk* pAllocChunk_;
   Chunk* pDeallocChunk_;
+  Chunk* findNearby(void* p);
+  void DoDeallocate(void* p);
 };
