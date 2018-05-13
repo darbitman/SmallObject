@@ -8,6 +8,7 @@ void Chunk::Init(size_t blockSize, unsigned char blocks) {
   // overflow check
   assert((blockSize * blocks) / blockSize == blocks);
   pData_ = new unsigned char[blockSize * blocks];
+  Reset(blockSize, blocks);
 }
 
 

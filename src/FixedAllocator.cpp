@@ -18,7 +18,8 @@ FixedAllocator::FixedAllocator(size_t blockSize) :
 
 FixedAllocator::~FixedAllocator() {
   for (Chunks::iterator itr = chunks_.begin(); itr != chunks_.end(); itr++) {
-    delete &(*itr);
+    assert(itr->blocksAvailable_ == numBlocks_);
+    itr->~Chunk();
   }
 }
 
@@ -57,24 +58,6 @@ void FixedAllocator::Deallocate(void* p) {
   pDeallocChunk_ = findNearby(p);
   assert(pDeallocChunk_);
   DoDeallocate(p);
-  /*
-  // check most recent deallocated Chunk first
-  // check if p lies between first block address and last block address
-  if (p >= pDeallocChunk_->pData_ && p <= (pDeallocChunk_->pData_ + blockSize_ * numBlocks_)) {
-    pDeallocChunk_->Deallocate(p, blockSize_);
-    return;
-  }
-  // if p does not belong to recently used Deallocated chunk
-  // find the correct chunk
-  for (Chunks::iterator itr = chunks_.begin(); itr != chunks_.end(); itr++) {
-    if (p >= itr->pData_ && p <= (itr->pData_ + blockSize_ * numBlocks_)) {
-      itr->Deallocate(p, blockSize_);
-      // set new recently deallocated Chunk
-      pDeallocChunk_ = &(*itr);
-      return;
-    }
-  }
-  */
 }
 
 
@@ -127,5 +110,32 @@ Chunk* FixedAllocator::findNearby(void* p) {
 void FixedAllocator::DoDeallocate(void *p) {
   assert(p >= pDeallocChunk_->pData_);
   assert(p < (pDeallocChunk_->pData_ + numBlocks_ * blockSize_));
-
+  pDeallocChunk_->Deallocate(p, blockSize_);
+  if (pDeallocChunk_->blocksAvailable_ == numBlocks_) {
+    // pDeallocChunk has all blocks freed, check if can be released
+    Chunk& lastChunk = chunks_.back();
+    if (&lastChunk == pDeallocChunk_) {
+      if (chunks_.size() > 1 &&
+        pDeallocChunk_[-1].blocksAvailable_ == numBlocks_) {
+        // have more than 1 chunk and last 2 chunks are empty
+        // can delete the last one
+        chunks_.pop_back();
+        pAllocChunk_ = pDeallocChunk_ = &chunks_.front();
+      }
+      return;
+    }
+    // checking if chunk at the back of the vector is empty
+    // if empty, delete it and change pointer pAllocChunk...
+    // ...to point to pDeallocChunk since it's empty
+    if (lastChunk.blocksAvailable_ == numBlocks_) {
+      chunks_.pop_back();
+      pAllocChunk_ = pDeallocChunk_;
+    }
+    // if last chunk isn't empty, move empty chunk to the back
+    // set pAllocChunk to point to it since that's where free blocks are
+    else {
+      std::swap(*pDeallocChunk_, lastChunk);
+      pAllocChunk_ = &chunks_.back();
+    }
+  }
 }
