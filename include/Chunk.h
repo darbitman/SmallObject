@@ -9,6 +9,7 @@ public:
   void Deallocate(void* p, size_t blockSize);
   void Reset(size_t blockSize, unsigned char blocks);
   void Release();
+  unsigned char getNumBlocks() const;
   unsigned char* pData_;
   unsigned char
     firstAvailableBlock_,

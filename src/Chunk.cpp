@@ -58,3 +58,8 @@ void Chunk::Reset(size_t blockSize, unsigned char blocks) {
 void Chunk::Release() {
   delete[] pData_;
 }
+
+
+unsigned char Chunk::getNumBlocks() const {
+  return blocks_;
+}
