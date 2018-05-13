@@ -2,9 +2,19 @@
 #include <assert.h>
 
 
+Chunk::Chunk(const Chunk& rhs) {
+  Init(rhs.blockSize_, rhs.blocks_);
+  for (unsigned int i = 0; i < blockSize_ * blocks_; i++) {
+    pData_[i] = rhs.pData_[i];
+  }
+}
+
+
 void Chunk::Init(size_t blockSize, unsigned char blocks) {
   assert(blockSize > 0);
   assert(blocks > 0);
+  blockSize_ = blockSize;
+  blocks_ = blocks;
   // overflow check
   assert((blockSize * blocks) / blockSize == blocks);
   pData_ = new unsigned char[blockSize * blocks];
@@ -53,6 +63,6 @@ void Chunk::Reset(size_t blockSize, unsigned char blocks) {
 }
 
 
-Chunk::~Chunk() {
+void Chunk::Release() {
   delete[] pData_;
 }

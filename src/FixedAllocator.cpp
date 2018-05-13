@@ -19,7 +19,7 @@ FixedAllocator::FixedAllocator(size_t blockSize) :
 FixedAllocator::~FixedAllocator() {
   for (Chunks::iterator itr = chunks_.begin(); itr != chunks_.end(); itr++) {
     assert(itr->blocksAvailable_ == numBlocks_);
-    itr->~Chunk();
+    itr->Release();
   }
 }
 

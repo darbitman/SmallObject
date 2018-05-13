@@ -16,6 +16,13 @@ target_sources(FixedAllocator PRIVATE
               FixedAllocator.cpp
               "../include/FixedAllocator.h")
 
+add_executable(FixedAllocatorTest
+               FixedAllocatorTest.cpp)
+
+target_link_libraries(FixedAllocatorTest
+                      FixedAllocator
+                      Chunk)
+
 add_library(SmallObjAllocator "")
 target_sources(SmallObjAllocator PRIVATE
                SmallObjAllocator.cpp
