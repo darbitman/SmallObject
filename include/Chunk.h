@@ -4,7 +4,6 @@
 class Chunk {
 public:
   Chunk() {};
-  Chunk(const Chunk& rhs);
   void Init(size_t blockSize, unsigned char numBlocks);
   void* Allocate(size_t blockSize);
   void Deallocate(void* p, size_t blockSize);

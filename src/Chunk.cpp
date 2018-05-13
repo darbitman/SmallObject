@@ -2,14 +2,6 @@
 #include <assert.h>
 
 
-Chunk::Chunk(const Chunk& rhs) {
-  Init(rhs.blockSize_, rhs.blocks_);
-  for (unsigned int i = 0; i < blockSize_ * blocks_; i++) {
-    pData_[i] = rhs.pData_[i];
-  }
-}
-
-
 void Chunk::Init(size_t blockSize, unsigned char blocks) {
   assert(blockSize > 0);
   assert(blocks > 0);
