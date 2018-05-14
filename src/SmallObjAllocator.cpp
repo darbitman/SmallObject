@@ -24,7 +24,7 @@ void* SmallObjAllocator::Allocate(size_t numBytes) {
   Pool::iterator itr = std::lower_bound(pool_.begin(), pool_.end(), numBytes, CompareFixedAllocatorSize);
   if (itr == pool_.end() || itr->getBlockSize() != numBytes) {
     itr = pool_.insert(itr, FixedAllocator(numBytes));
-    pLastDealloc_ = &(*pool_.begin());
+    pLastDealloc_ = &(pool_.back());
   }
   pLastAlloc_ = &(*itr);
   return pLastAlloc_->Allocate();

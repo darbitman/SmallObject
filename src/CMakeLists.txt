@@ -28,6 +28,14 @@ target_sources(SmallObjAllocator PRIVATE
                SmallObjAllocator.cpp
                "../include/SmallObjAllocator.h")
 
+add_executable(SmallObjAllocatorTest
+               SmallObjAllocatorTest.cpp)
+
+target_link_libraries(SmallObjAllocatorTest
+                      SmallObjAllocator
+                      FixedAllocator
+                      Chunk)
+
 add_library(SmallObject "")
 target_sources(SmallObject PRIVATE
                SmallObject.cpp
