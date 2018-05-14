@@ -11,11 +11,16 @@ struct ChunkTestStruct {
 };
 
 int main() {
+  unsigned int maxChunkSize = 255;
+  unsigned int numChunks = 4;
+  unsigned int numTotalAllocations = maxChunkSize * numChunks;
+  void** chunkPtrArr = new void*[numTotalAllocations];
   FixedAllocator fa1(sizeof(ChunkTestStruct));
-  ChunkTestStruct* pOne = reinterpret_cast<ChunkTestStruct*>(fa1.Allocate());
-  pOne->a = 10;
-  pOne->b = 20;
-  pOne->c = 30;
-  fa1.Deallocate(pOne);
+  for (unsigned int i = 0; i < numTotalAllocations; i++) {
+    chunkPtrArr[i] = fa1.Allocate();
+  }
+  for (int i = numTotalAllocations - 1; i >= 0; i--) {
+    fa1.Deallocate(chunkPtrArr[i]);
+  }
   return 0;
 }

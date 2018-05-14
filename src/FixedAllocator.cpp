@@ -18,7 +18,7 @@ FixedAllocator::FixedAllocator(size_t blockSize) :
 
 FixedAllocator::~FixedAllocator() {
   for (Chunks::iterator itr = chunks_.begin(); itr != chunks_.end(); itr++) {
-    assert(itr->blocksAvailable_ == numBlocks_);
+    assert(itr->getNumBlocks() == numBlocks_);
     itr->Release();
   }
 }
@@ -82,7 +82,7 @@ Chunk* FixedAllocator::findNearby(void* p) {
 
   for (;;) {
     if (lo) {
-      // p lies in the address of chunk pointed to by lo
+      // p lies in the address space of a Chunk pointed to by lo
       if (p >= lo->pData_ && p < lo->pData_ + chunkLength) {
         return lo;
       }
