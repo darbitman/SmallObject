@@ -4,7 +4,7 @@
 #include "Chunk.h"
 
 #ifndef DEFAULT_CHUNK_SIZE
-#define DEFAULT_CHUNK_SIZE 4096
+#define DEFAULT_CHUNK_SIZE 48
 #endif
 
 class FixedAllocator {
