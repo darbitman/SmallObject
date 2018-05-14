@@ -75,7 +75,7 @@ Chunk* FixedAllocator::findNearby(void* p) {
   Chunk* loBound = &chunks_.front();
   Chunk* hiBound = &chunks_.back() + 1;
 
-  // special case: pDeallocChunk_ is the last in the vector
+  // special case: pDeallocChunk_ is the last Chunk in the vector
   if (hi == hiBound) {
     hi = 0;
   }
@@ -112,27 +112,34 @@ void FixedAllocator::DoDeallocate(void *p) {
   assert(p < (pDeallocChunk_->pData_ + numBlocks_ * blockSize_));
   pDeallocChunk_->Deallocate(p, blockSize_);
   if (pDeallocChunk_->blocksAvailable_ == numBlocks_) {
-    // pDeallocChunk has all blocks freed, check if can be released
+    // pDeallocChunk has all blocks freed
+    // check if another chunk is empty in order to release a Chunk
     Chunk& lastChunk = chunks_.back();
     if (&lastChunk == pDeallocChunk_) {
       if (chunks_.size() > 1 &&
         pDeallocChunk_[-1].blocksAvailable_ == numBlocks_) {
         // have more than 1 chunk and last 2 chunks are empty
         // can delete the last one
+        chunks_.back().Release();
         chunks_.pop_back();
         pAllocChunk_ = pDeallocChunk_ = &chunks_.front();
       }
       return;
     }
-    // checking if chunk at the back of the vector is empty
-    // if empty, delete it and change pointer pAllocChunk...
-    // ...to point to pDeallocChunk since it's empty
+    // pDeallocChunk and lastChunk are not the same Chunk
+    // checking if lastChunk is empty
+    // if empty, release it and change pointer pAllocChunk
+    //    to point to pDeallocChunk since it's empty
+    // move empty chunk to the back
     if (lastChunk.blocksAvailable_ == numBlocks_) {
+      chunks_.back().Release();
       chunks_.pop_back();
       pAllocChunk_ = pDeallocChunk_;
+      std::swap(*pDeallocChunk_, chunks_.back());
     }
     // if last chunk isn't empty, move empty chunk to the back
-    // set pAllocChunk to point to it since that's where free blocks are
+    // set pAllocChunk to point to it since that's where free blocks
+    //    will be allocated from
     else {
       std::swap(*pDeallocChunk_, lastChunk);
       pAllocChunk_ = &chunks_.back();
