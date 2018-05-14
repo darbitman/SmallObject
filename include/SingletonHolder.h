@@ -5,7 +5,7 @@ template<typename SingletonType>
 class SingletonHolder {
 public:
   static SingletonType& getInstance() {
-    static SingletonType instance;
+    static SingletonType instance(4096, 16);
     return instance;
   }
 

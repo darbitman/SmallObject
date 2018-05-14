@@ -44,3 +44,8 @@ target_sources(SmallObject PRIVATE
 add_executable(SingletonHolderTest
                SingletonHolderTest.cpp
                "../include/SingletonHolder.h")
+
+target_link_libraries(SingletonHolderTest
+                      SmallObjAllocator
+                      FixedAllocator
+                      Chunk)
