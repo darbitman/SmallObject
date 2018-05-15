@@ -3,9 +3,8 @@
 #include <algorithm>
 
 
-SmallObjAllocator::SmallObjAllocator(size_t chunkSize, size_t maxObjectSIze):
-  chunkSize_(chunkSize), maxObjectSize_(maxObjectSIze),
-  pLastAlloc_(0), pLastDealloc_(0) {
+SmallObjAllocator::SmallObjAllocator(size_t maxObjectSize):
+  maxObjectSize_(maxObjectSize), pLastAlloc_(0), pLastDealloc_(0) {
 }
 
 

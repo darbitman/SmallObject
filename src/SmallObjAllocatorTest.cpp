@@ -17,7 +17,7 @@ struct SmallObjTestStruct2{
 int main() {
   size_t chunkSize = 1024;
   size_t maxObjectSize = 16;
-  SmallObjAllocator soa1(chunkSize, maxObjectSize);
+  SmallObjAllocator soa1(maxObjectSize);
   
   unsigned int numBlocks = 3;
   unsigned int numChunks = 4;
