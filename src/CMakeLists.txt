@@ -36,16 +36,25 @@ target_link_libraries(SmallObjAllocatorTest
                       FixedAllocator
                       Chunk)
 
-add_library(SmallObject "")
-target_sources(SmallObject PRIVATE
-               SmallObject.cpp
-               "../include/SmallObject.h")
-
 add_executable(SingletonHolderTest
                SingletonHolderTest.cpp
                "../include/SingletonHolder.h")
 
 target_link_libraries(SingletonHolderTest
+                      SmallObjAllocator
+                      FixedAllocator
+                      Chunk)
+                      
+add_library(SmallObject "")
+target_sources(SmallObject PRIVATE
+               SmallObject.cpp
+               "../include/SmallObject.h")
+
+add_executable(SmallObjectTest
+               SmallObjectTest.cpp)
+
+target_link_libraries(SmallObjectTest
+                      SmallObject
                       SmallObjAllocator
                       FixedAllocator
                       Chunk)
