@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdlib>
 #include <vector>
+#include <Windows.h>
 #include "FixedAllocator.h"
 
 class SmallObjAllocator {
@@ -15,6 +16,7 @@ private:
   FixedAllocator* pLastDealloc_;
   size_t chunkSize_;
   size_t maxObjectSize_;
+  HANDLE SmallObjAllocatorMutex_;
 };
 
 

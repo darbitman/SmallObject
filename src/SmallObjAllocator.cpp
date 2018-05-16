@@ -1,14 +1,18 @@
 #include "SmallObjAllocator.h"
 #include <assert.h>
 #include <algorithm>
+#include <iostream>
 
 
 SmallObjAllocator::SmallObjAllocator(size_t maxObjectSize):
   maxObjectSize_(maxObjectSize), pLastAlloc_(0), pLastDealloc_(0) {
+  SmallObjAllocatorMutex_ = CreateMutex(NULL, FALSE, NULL);
+  assert(SmallObjAllocatorMutex_ != NULL);
 }
 
 
 void* SmallObjAllocator::Allocate(size_t numBytes) {
+  WaitForSingleObject(SmallObjAllocatorMutex_, INFINITE);
   if (numBytes > maxObjectSize_) {
     return operator new(numBytes);
   }
@@ -26,7 +30,10 @@ void* SmallObjAllocator::Allocate(size_t numBytes) {
     pLastDealloc_ = &(pool_.back());
   }
   pLastAlloc_ = &(*itr);
-  return pLastAlloc_->Allocate();
+  void* returnPtr = pLastAlloc_->Allocate();
+  std::cout << GetCurrentThreadId() << std::endl;
+  ReleaseMutex(SmallObjAllocatorMutex_);
+  return returnPtr;
 }
 
 
