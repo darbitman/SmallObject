@@ -4,15 +4,19 @@
 #include <iostream>
 
 
+namespace {
+  bool CompareFixedAllocatorSize(const FixedAllocator& FixedAllocatorObj, size_t maxObjectSize) {
+    return FixedAllocatorObj.getBlockSize() < maxObjectSize;
+  }
+}
+
+
 SmallObjAllocator::SmallObjAllocator(size_t maxObjectSize):
   maxObjectSize_(maxObjectSize), pLastAlloc_(0), pLastDealloc_(0) {
-  SmallObjAllocatorMutex_ = CreateMutex(NULL, FALSE, NULL);
-  assert(SmallObjAllocatorMutex_ != NULL);
 }
 
 
 void* SmallObjAllocator::Allocate(size_t numBytes) {
-  WaitForSingleObject(SmallObjAllocatorMutex_, INFINITE);
   if (numBytes > maxObjectSize_) {
     return operator new(numBytes);
   }
@@ -31,8 +35,6 @@ void* SmallObjAllocator::Allocate(size_t numBytes) {
   }
   pLastAlloc_ = &(*itr);
   void* returnPtr = pLastAlloc_->Allocate();
-  std::cout << GetCurrentThreadId() << std::endl;
-  ReleaseMutex(SmallObjAllocatorMutex_);
   return returnPtr;
 }
 
@@ -54,8 +56,4 @@ void SmallObjAllocator::Deallocate(void* p, size_t numBytes) {
   pLastDealloc_->Deallocate(p);
 }
 
-namespace {
-  bool CompareFixedAllocatorSize(const FixedAllocator& FixedAllocatorObj, size_t maxObjectSize) {
-    return FixedAllocatorObj.getBlockSize() < maxObjectSize;
-  }
-}
+

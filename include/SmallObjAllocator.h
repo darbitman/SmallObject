@@ -1,8 +1,8 @@
 #pragma once
 #include <cstdlib>
 #include <vector>
-#include <Windows.h>
 #include "FixedAllocator.h"
+
 
 class SmallObjAllocator {
 public:
@@ -12,14 +12,8 @@ public:
 private:
   typedef std::vector<FixedAllocator> Pool;
   Pool pool_;
+  size_t maxObjectSize_;
   FixedAllocator* pLastAlloc_;
   FixedAllocator* pLastDealloc_;
-  size_t chunkSize_;
-  size_t maxObjectSize_;
-  HANDLE SmallObjAllocatorMutex_;
+  //size_t chunkSize_;
 };
-
-
-namespace {
-  bool CompareFixedAllocatorSize(const FixedAllocator& FixedAllocatorObj, size_t maxObjectSize);
-}

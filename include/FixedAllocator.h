@@ -1,7 +1,6 @@
 #pragma once
 #include <cstdlib>
 #include <vector>
-#include <windows.h>
 #include "Chunk.h"
 
 #ifndef DEFAULT_CHUNK_SIZE
@@ -22,7 +21,6 @@ private:
   Chunks chunks_;
   Chunk* pAllocChunk_;
   Chunk* pDeallocChunk_;
-  HANDLE fixedAllocatorMutex_;
   Chunk* findNearby(void* p);
   void DoDeallocate(void* p);
 };
