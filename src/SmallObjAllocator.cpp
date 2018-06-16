@@ -1,3 +1,12 @@
+//****************************************************************************//
+// SmallObjAllocator.cpp                                                      //
+// Author: Dmitriy A                                                          //
+// Description:                                                               //
+//    Holds pool of fixed-sized allocator objects to allocate objects of      //
+//    varying sizes                                                           //
+//****************************************************************************//
+
+
 #include "SmallObjAllocator.h"
 #include <assert.h>
 #include <algorithm>

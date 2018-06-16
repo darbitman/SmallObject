@@ -35,9 +35,9 @@ public:
 private:
   size_t blockSize_;
   unsigned char numBlocks_;
-  typedef std::vector<Chunk> Chunks;
 
   // holds all chunks that handle blockSize requests
+  typedef std::vector<Chunk> Chunks;
   Chunks chunks_;
 
   // LRU chunk that handled an alloc
