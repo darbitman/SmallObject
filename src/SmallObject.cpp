@@ -1,3 +1,11 @@
+//****************************************************************************//
+// SmallObject.h                                                              //
+// Author: Dmitriy A                                                          //
+// Description:                                                               //
+//    Handles allocations by override new and delete operators                //
+//****************************************************************************//
+
+
 #include "SmallObject.h"
 #include "SingletonHolder.h"
 #include "SmallObjAllocator.h"
