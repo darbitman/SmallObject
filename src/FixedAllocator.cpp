@@ -1,3 +1,12 @@
+//****************************************************************************//
+// FixedAllocator.cpp                                                         //
+// Author: Dmitriy A                                                          //
+// Description:                                                               //
+//    Allocates objects of a given size                                       //
+//    Caches LRU chunk for alloc and dealloc                                  //
+//****************************************************************************//
+
+
 #include "FixedAllocator.h"
 #include <assert.h>
 
