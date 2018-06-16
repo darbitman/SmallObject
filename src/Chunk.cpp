@@ -1,3 +1,12 @@
+//****************************************************************************//
+// Chunk.cpp                                                                  //
+// Author: Dmitriy A                                                          //
+// Description:                                                               //
+//    Low level memory manager for objects of a given size of bytes           //
+//    Each chunk has a limited number of blocks                               //
+//****************************************************************************//
+
+
 #include "Chunk.h"
 #include <assert.h>
 
@@ -9,7 +18,11 @@ void Chunk::Init(size_t blockSize, unsigned char blocks) {
   blocks_ = blocks;
   // overflow check
   assert((blockSize * blocks) / blockSize == blocks);
+
+  // allocate new memory
   pData_ = new unsigned char[blockSize * blocks];
+
+  // initialize blocks
   Reset(blockSize, blocks);
 }
 
