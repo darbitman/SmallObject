@@ -44,7 +44,7 @@ class Chunk
     /// @param numBlocks Total number of blocks in the memory space of this Chunk
     void Reset(size_t blockSize, uint8_t numBlocks);
 
-    /// Points to the block of memory past the last one
+    /// Points to the block past the last one in memory
     const uint8_t* const pDataEnd_;
 
     uint8_t nextAvailableBlock_;
