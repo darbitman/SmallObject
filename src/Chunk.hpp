@@ -9,6 +9,16 @@ class Chunk
   public:
     Chunk() noexcept;
 
+    Chunk(const Chunk&) noexcept = default;
+
+    Chunk(Chunk&&) noexcept = default;
+
+    Chunk& operator=(const Chunk&) noexcept = default;
+
+    Chunk& operator=(Chunk&&) noexcept = default;
+
+    ~Chunk() noexcept = default;
+
     /// @brief Initialize Chunk memory
     void Init(size_t blockSize, uint8_t numBlocks) noexcept;
 
