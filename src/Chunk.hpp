@@ -7,33 +7,46 @@
 class Chunk
 {
   public:
-    Chunk() noexcept = default;
+    Chunk() noexcept;
 
-    /// @brief initialize memory
-    void Init(size_t blockSize, uint8_t numBlocks);
+    /// @brief Initialize Chunk memory
+    void Init(size_t blockSize, uint8_t numBlocks) noexcept;
 
-    // allocate memory and return a pointer to it to the client
-    void* Allocate(size_t blockSize);
+    /// @brief Allocate memory and return a pointer to it to the client
+    /// @param blockSize Size of the block to allocate memory for
+    /// @return void* Returns a pointer to a block of size blockSize (in bytes). Returns a nullptr
+    /// if no free memory exists.
+    void* Allocate(size_t blockSize) noexcept;
 
-    // deallocate memory and add back to pool
-    void Deallocate(void* p, size_t blockSize);
+    /// @brief Deallocate memory and add back to pool
+    /// @param pBlock Pointer to the block to return to memory pool
+    /// @param blockSize Size of each block (in bytes)
+    /// @param numBlocks Total number of blocks in the memory space of this Chunk
+    void Deallocate(void* pBlock, size_t blockSize, size_t numBlocks) noexcept;
 
-    // return memory back to OS
-    void Release();
+    /// @brief Return memory back to OS
+    void Release() noexcept;
 
-    uint8_t getNumBlocks() const;
+    /// @brief Checks if the block pointed to by pBlock falls somewhere in the memory space of this
+    /// Chunk
+    /// @param pBlock The pointer to a block that needs to be checked
+    /// @param blockSize Size of each block (in bytes)
+    /// @param numBlocks Total number of blocks in the memory space of this Chunk
+    bool IsInChunk(const void* pBlock, size_t blockSize, size_t numBlocks) const noexcept;
 
   private:
-    /// @brief Initialize blocks
-    void Reset(size_t blockSize, uint8_t blocks);
-
-    size_t blockSize_;
-
+    /// Points to the beginning of the memory space in this Chunk
     uint8_t* pData_;
 
-    uint8_t blocks_;
+    /// @brief Initialize the blocks in this Chunk in the form of a "linked list". Does not zero out
+    /// memory.
+    /// @param blockSize Size of each block (in bytes)
+    /// @param numBlocks Total number of blocks in the memory space of this Chunk
+    void Reset(size_t blockSize, uint8_t numBlocks);
 
-    uint8_t firstAvailableBlock_;
+    uint8_t* pDataEnd_;
+    uint8_t nextAvailableBlock_;
 
+  public:
     uint8_t blocksAvailable_;
 };

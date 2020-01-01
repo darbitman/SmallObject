@@ -2,14 +2,15 @@
 
 #include <cassert>
 
-void Chunk::Init(size_t blockSize, uint8_t numBlocks)
+Chunk::Chunk() noexcept
+    : pData_(nullptr), pDataEnd_(nullptr), nextAvailableBlock_(0), blocksAvailable_(0)
+{
+}
+
+void Chunk::Init(size_t blockSize, uint8_t numBlocks) noexcept
 {
     assert(blockSize > 0);
     assert(numBlocks > 0);
-    blockSize_ = blockSize;
-    blocks_ = numBlocks;
-    // overflow check
-    assert((blockSize * numBlocks) / blockSize == numBlocks);
 
     // allocate new memory
     pData_ = new uint8_t[blockSize * numBlocks];
@@ -18,41 +19,41 @@ void Chunk::Init(size_t blockSize, uint8_t numBlocks)
     Reset(blockSize, numBlocks);
 }
 
-void* Chunk::Allocate(size_t blockSize)
+void* Chunk::Allocate(size_t blockSize) noexcept
 {
-    if (!blocksAvailable_)
+    if (blocksAvailable_ == 0)
     {
         return nullptr;
     }
 
-    assert((firstAvailableBlock_ * blockSize) / blockSize == firstAvailableBlock_);
-    uint8_t* resultPtr = pData_ + (firstAvailableBlock_ * blockSize);
-    // Update firstAvailableBlock_ to point to the next block
-    firstAvailableBlock_ = *resultPtr;
+    uint8_t* resultPtr = pData_ + (nextAvailableBlock_ * blockSize);
+
+    // Update nextAvailableBlock_ to point to the next block
+    nextAvailableBlock_ = *resultPtr;
     --blocksAvailable_;
     return resultPtr;
 }
 
-void Chunk::Deallocate(void* p, size_t blockSize)
+void Chunk::Deallocate(void* pBlock, size_t blockSize, size_t numBlocks) noexcept
 {
-    uint8_t* pBlockToRelease = static_cast<uint8_t*>(p);
+    uint8_t* pBlockToRelease = static_cast<uint8_t*>(pBlock);
 
     // boundary check
     assert(pBlockToRelease >= pData_);
-    assert(pBlockToRelease < (pData_ + (blocks_ * blockSize)));
+    assert(pBlockToRelease < (pData_ + (numBlocks * blockSize)));
 
     // Alignment check
     assert((pBlockToRelease - pData_) % blockSize == 0);
 
     // update current block's "list pointer" to point to the block that was previously the first
     // available block
-    *pBlockToRelease = firstAvailableBlock_;
+    *pBlockToRelease = nextAvailableBlock_;
 
     // set the first available block to "point" at the block that is being deallocated
-    firstAvailableBlock_ = static_cast<uint8_t>((pBlockToRelease - pData_) / blockSize);
+    nextAvailableBlock_ = static_cast<uint8_t>((pBlockToRelease - pData_) / blockSize);
 
     // Truncation check
-    assert(firstAvailableBlock_ == (pBlockToRelease - pData_) / blockSize);
+    assert(nextAvailableBlock_ == (pBlockToRelease - pData_) / blockSize);
 
     ++blocksAvailable_;
 }
@@ -65,18 +66,25 @@ void Chunk::Reset(size_t blockSize, uint8_t numBlocks)
     // overflow check
     assert((blockSize * numBlocks) / blockSize == numBlocks);
 
-    firstAvailableBlock_ = 0;
+    nextAvailableBlock_ = 0;
 
     blocksAvailable_ = numBlocks;
 
     uint8_t* dataPtr = pData_;
     for (uint8_t i = 0; i != numBlocks; dataPtr += blockSize)
     {
-        // assign first byte of each unused block to index of the next unused block
+        // assign first byte in each block to the index of the next block
+        // ie linked list
         *dataPtr = ++i;
     }
 }
 
-void Chunk::Release() { delete[] pData_; }
+void Chunk::Release() noexcept { delete[] pData_; }
 
-uint8_t Chunk::getNumBlocks() const { return blocks_; }
+bool Chunk::IsInChunk(const void* pBlock, size_t blockSize, size_t numBlocks) const noexcept
+{
+    auto pBlockToCheck = reinterpret_cast<const uint8_t*>(pBlock);
+
+    // check if pBlock falls within the memory space of this Chunk
+    return (pBlockToCheck >= pData_) && (pBlockToCheck < (pData_ + (numBlocks * blockSize)));
+}
