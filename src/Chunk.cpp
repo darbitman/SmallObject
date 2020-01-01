@@ -1,78 +1,82 @@
-//****************************************************************************//
-// Chunk.cpp                                                                  //
-// Author: Dmitriy A                                                          //
-// Description:                                                               //
-//    Low level memory manager for objects of a given size of bytes           //
-//    Each chunk has a limited number of blocks                               //
-//****************************************************************************//
+#include "Chunk.hpp"
 
+#include <cassert>
 
-#include "Chunk.h"
-#include <assert.h>
+void Chunk::Init(size_t blockSize, uint8_t numBlocks)
+{
+    assert(blockSize > 0);
+    assert(numBlocks > 0);
+    blockSize_ = blockSize;
+    blocks_ = numBlocks;
+    // overflow check
+    assert((blockSize * numBlocks) / blockSize == numBlocks);
 
+    // allocate new memory
+    pData_ = new uint8_t[blockSize * numBlocks];
 
-void Chunk::Init(size_t blockSize, unsigned char blocks) {
-  assert(blockSize > 0);
-  assert(blocks > 0);
-  blockSize_ = blockSize;
-  blocks_ = blocks;
-  // overflow check
-  assert((blockSize * blocks) / blockSize == blocks);
-
-  // allocate new memory
-  pData_ = new unsigned char[blockSize * blocks];
-
-  // initialize blocks
-  Reset(blockSize, blocks);
+    // initialize blocks
+    Reset(blockSize, numBlocks);
 }
 
+void* Chunk::Allocate(size_t blockSize)
+{
+    if (!blocksAvailable_)
+    {
+        return nullptr;
+    }
 
-void* Chunk::Allocate(size_t blockSize) {
-  if (!blocksAvailable_) {
-    return 0;
-  }
-  assert((firstAvailableBlock_ * blockSize) / blockSize == firstAvailableBlock_);
-  unsigned char* resultPtr = pData_ + (firstAvailableBlock_ * blockSize);
-  // Update firstAvailableBlock_ to point to the next block
-  firstAvailableBlock_ = *resultPtr;
-  --blocksAvailable_;
-  return resultPtr;
+    assert((firstAvailableBlock_ * blockSize) / blockSize == firstAvailableBlock_);
+    uint8_t* resultPtr = pData_ + (firstAvailableBlock_ * blockSize);
+    // Update firstAvailableBlock_ to point to the next block
+    firstAvailableBlock_ = *resultPtr;
+    --blocksAvailable_;
+    return resultPtr;
 }
 
+void Chunk::Deallocate(void* p, size_t blockSize)
+{
+    uint8_t* pBlockToRelease = static_cast<uint8_t*>(p);
 
-void Chunk::Deallocate(void* p, size_t blockSize) {
-  assert(p >= pData_);
-  unsigned char* toReleasePtr = static_cast<unsigned char*>(p);
-  // Alignment check
-  assert((toReleasePtr - pData_) % blockSize == 0);
-  *toReleasePtr = firstAvailableBlock_;
-  firstAvailableBlock_ = static_cast<unsigned char>((toReleasePtr - pData_) / blockSize);
-  // Truncation check
-  assert(firstAvailableBlock_ == (toReleasePtr - pData_) / blockSize);
-  ++blocksAvailable_;
+    // boundary check
+    assert(pBlockToRelease >= pData_);
+    assert(pBlockToRelease < (pData_ + (blocks_ * blockSize)));
+
+    // Alignment check
+    assert((pBlockToRelease - pData_) % blockSize == 0);
+
+    // update current block's "list pointer" to point to the block that was previously the first
+    // available block
+    *pBlockToRelease = firstAvailableBlock_;
+
+    // set the first available block to "point" at the block that is being deallocated
+    firstAvailableBlock_ = static_cast<uint8_t>((pBlockToRelease - pData_) / blockSize);
+
+    // Truncation check
+    assert(firstAvailableBlock_ == (pBlockToRelease - pData_) / blockSize);
+
+    ++blocksAvailable_;
 }
 
+void Chunk::Reset(size_t blockSize, uint8_t numBlocks)
+{
+    assert(blockSize > 0);
+    assert(numBlocks > 0);
 
-void Chunk::Reset(size_t blockSize, unsigned char blocks) {
-  assert(blockSize > 0);
-  assert(blocks > 0);
-  // overflow check
-  assert((blockSize * blocks) / blockSize == blocks);
-  firstAvailableBlock_ = 0;
-  blocksAvailable_ = blocks;
-  unsigned char* dataPtr = pData_;
-  for (unsigned char i = 0; i != blocks; dataPtr += blockSize) {
-    // assign first byte of each unused block to index of the next unused block
-    *dataPtr = ++i;
-  }
+    // overflow check
+    assert((blockSize * numBlocks) / blockSize == numBlocks);
+
+    firstAvailableBlock_ = 0;
+
+    blocksAvailable_ = numBlocks;
+
+    uint8_t* dataPtr = pData_;
+    for (uint8_t i = 0; i != numBlocks; dataPtr += blockSize)
+    {
+        // assign first byte of each unused block to index of the next unused block
+        *dataPtr = ++i;
+    }
 }
 
+void Chunk::Release() { delete[] pData_; }
 
-void Chunk::Release() {
-  delete[] pData_;
-}
-
-
-unsigned char Chunk::getNumBlocks() const {
-  return blocks_;
-}
+uint8_t Chunk::getNumBlocks() const { return blocks_; }
