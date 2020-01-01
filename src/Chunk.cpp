@@ -15,7 +15,8 @@ void Chunk::Init(size_t blockSize, uint8_t numBlocks) noexcept
     // allocate new memory
     pData_ = new uint8_t[blockSize * numBlocks];
 
-    // Update end pointer (const hack to be able to modify a const pointer after initialization)
+    // Update data end pointer (const hack to be able to modify a const pointer after
+    // initialization)
     uint8_t** ppDataEnd_ = const_cast<uint8_t**>(&pDataEnd_);
     *ppDataEnd_ = pData_ + (blockSize * numBlocks);
 
