@@ -15,6 +15,10 @@ void Chunk::Init(size_t blockSize, uint8_t numBlocks) noexcept
     // allocate new memory
     pData_ = new uint8_t[blockSize * numBlocks];
 
+    // Update end pointer (const hack to be able to modify a const pointer after initialization)
+    uint8_t** ppDataEnd_ = const_cast<uint8_t**>(&pDataEnd_);
+    *ppDataEnd_ = pData_ + (blockSize * numBlocks);
+
     // initialize blocks
     Reset(blockSize, numBlocks);
 }
@@ -86,5 +90,5 @@ bool Chunk::IsInChunk(const void* pBlock, size_t blockSize, size_t numBlocks) co
     auto pBlockToCheck = reinterpret_cast<const uint8_t*>(pBlock);
 
     // check if pBlock falls within the memory space of this Chunk
-    return (pBlockToCheck >= pData_) && (pBlockToCheck < (pData_ + (numBlocks * blockSize)));
+    return (pBlockToCheck >= pData_) && (pBlockToCheck < pDataEnd_);
 }
