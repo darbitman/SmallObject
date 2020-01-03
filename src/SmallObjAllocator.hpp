@@ -8,19 +8,21 @@
 class SmallObjAllocator
 {
   public:
-    // create a SmallObjAllocator to handle allocations less than maxObjectSize
-    SmallObjAllocator(size_t maxObjectSize);
+    /// @brief create a SmallObjAllocator to handle allocations up to a maximum size (in bytes)
+    /// @param maxObjectSize The maximum size (in bytes) of objects to allocate
+    explicit SmallObjAllocator(size_t maxObjectSize) noexcept;
 
-    // allocate memory to handle numBytes
-    void* Allocate(size_t numBytes);
+    ~SmallObjAllocator() noexcept;
 
-    // deallocate memory at pointer p
-    void Deallocate(void* p, size_t numBytes);
+    /// @brief allocate memory
+    /// @param numBytes The size (in bytes) of the object to allocate memory for
+    void* Allocate(size_t numBytes) noexcept;
+
+    /// deallocate memory at pointer p
+    void Deallocate(void* pObjectToDealloc, size_t numBytes) noexcept;
 
   private:
-    // holds pool of FixedAllocator objects that handle various sized requests
-    typedef std::vector<FixedAllocator> Pool;
-    Pool pool_;
+    using Pool = std::vector<FixedAllocator>;
 
     // max num of bytes handled
     size_t maxObjectSize_;
@@ -30,4 +32,8 @@ class SmallObjAllocator
 
     // LRU FIxedAllocator
     FixedAllocator* pLastDealloc_;
+
+    // holds pool of FixedAllocator objects that handle various sized requests
+    // Sorted by the size of the objects each FixedAllocator object handles
+    Pool pool_;
 };
