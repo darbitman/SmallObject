@@ -12,7 +12,7 @@ bool CompareFixedAllocatorSize(const FixedAllocator& FixedAllocatorObj, size_t m
 }
 }  // namespace
 
-SmallObjAllocator::SmallObjAllocator(size_t maxObjectSize)
+SmallObjAllocator::SmallObjAllocator(size_t maxObjectSize) noexcept
     : maxObjectSize_(maxObjectSize), pLastAlloc_(nullptr), pLastDealloc_(nullptr)
 {
 }
