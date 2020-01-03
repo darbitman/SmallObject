@@ -1,4 +1,3 @@
-
 #include "SmallObject.hpp"
 #include "SingletonHolder.hpp"
 #include "SmallObjAllocator.hpp"
