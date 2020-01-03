@@ -16,7 +16,7 @@ class FixedAllocator
     FixedAllocator& operator=(FixedAllocator&&) noexcept = default;
 
     /// @brief release managed Chunks back to OS
-    ~FixedAllocator() noexcept = default;
+    ~FixedAllocator() noexcept;
 
     /// @brief Allocate memory and return pointer to the block of memory
     void* Allocate() noexcept;
