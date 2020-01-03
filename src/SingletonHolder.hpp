@@ -1,17 +1,21 @@
 #pragma once
+
 #include <cstdlib>
 
-template<typename SingletonType, size_t maxObjectSize>
-class SingletonHolder {
-public:
-  static SingletonType& getInstance() {
-    static SingletonType instance(maxObjectSize);
-    return instance;
-  }
+template <typename SingletonType, size_t maxObjectSize>
+class SingletonHolder
+{
+  public:
+    static SingletonType& getInstance()
+    {
+        static SingletonType instance(maxObjectSize);
+        return instance;
+    }
 
-  SingletonHolder(const SingletonHolder<SingletonType, maxObjectSize>&) = delete;
-  void operator=(const SingletonHolder<SingletonType, maxObjectSize>&) = delete;
-private:
-  SingletonHolder() {}
-  ~SingletonHolder() {}
+    SingletonHolder() = delete;
+    ~SingletonHolder() = delete;
+    SingletonHolder(const SingletonHolder<SingletonType, maxObjectSize>&) = delete;
+    SingletonHolder(SingletonHolder<SingletonType, maxObjectSize>&&) = delete;
+    SingletonHolder& operator=(const SingletonHolder<SingletonType, maxObjectSize>&) = delete;
+    SingletonHolder& operator=(SingletonHolder<SingletonType, maxObjectSize>&&) = delete;
 };
