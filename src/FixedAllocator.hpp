@@ -13,8 +13,10 @@ class FixedAllocator
     /// @param blockSize Size of objects (in bytes)
     explicit FixedAllocator(size_t blockSize) noexcept;
 
+    FixedAllocator& operator=(FixedAllocator&&) noexcept = default;
+
     /// @brief release managed Chunks back to OS
-    ~FixedAllocator() noexcept;
+    ~FixedAllocator() noexcept = default;
 
     /// @brief Allocate memory and return pointer to the block of memory
     void* Allocate() noexcept;
@@ -24,6 +26,11 @@ class FixedAllocator
 
     /// @brief Return the size (in bytes) of the objects that this FixedAllocator allocates
     size_t getBlockSize() const noexcept;
+
+    /// Deleted to prevent misuse
+    FixedAllocator(const FixedAllocator&) noexcept = delete;
+    FixedAllocator(FixedAllocator&&) noexcept = default;
+    FixedAllocator& operator=(const FixedAllocator&) noexcept = delete;
 
   private:
     using Chunks = std::vector<Chunk>;
