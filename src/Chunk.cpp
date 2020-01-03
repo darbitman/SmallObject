@@ -2,9 +2,38 @@
 
 #include <cassert>
 
+using std::swap;
+
 Chunk::Chunk() noexcept
     : pData_(nullptr), pDataEnd_(nullptr), nextAvailableBlock_(0), blocksAvailable_(0)
 {
+}
+
+Chunk::Chunk(Chunk&& other) noexcept
+    : pData_(nullptr), pDataEnd_(nullptr), nextAvailableBlock_(0), blocksAvailable_(0)
+{
+    swap(pData_, other.pData_);
+
+    uint8_t** ppOtherDataEnd = const_cast<uint8_t**>(&(other.pDataEnd_));
+    uint8_t** ppDataEnd = const_cast<uint8_t**>(&pDataEnd_);
+    swap(*ppDataEnd, *ppOtherDataEnd);
+
+    swap(nextAvailableBlock_, other.nextAvailableBlock_);
+    swap(blocksAvailable_, other.blocksAvailable_);
+}
+
+Chunk& Chunk::operator=(Chunk&& other) noexcept
+{
+    swap(pData_, other.pData_);
+
+    uint8_t** ppOtherDataEnd = const_cast<uint8_t**>(&(other.pDataEnd_));
+    uint8_t** ppDataEnd = const_cast<uint8_t**>(&pDataEnd_);
+    swap(*ppDataEnd, *ppOtherDataEnd);
+
+    swap(nextAvailableBlock_, other.nextAvailableBlock_);
+    swap(blocksAvailable_, other.blocksAvailable_);
+
+    return *this;
 }
 
 void Chunk::Init(size_t blockSize, uint8_t numBlocks) noexcept
@@ -17,8 +46,8 @@ void Chunk::Init(size_t blockSize, uint8_t numBlocks) noexcept
 
     // Update data end pointer (const hack to be able to modify a const pointer after
     // initialization)
-    uint8_t** ppDataEnd_ = const_cast<uint8_t**>(&pDataEnd_);
-    *ppDataEnd_ = pData_ + (blockSize * numBlocks);
+    uint8_t** ppDataEnd = const_cast<uint8_t**>(&pDataEnd_);
+    *ppDataEnd = pData_ + (blockSize * numBlocks);
 
     // initialize blocks
     Reset(blockSize, numBlocks);

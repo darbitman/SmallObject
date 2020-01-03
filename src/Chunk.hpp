@@ -9,13 +9,13 @@ class Chunk
   public:
     Chunk() noexcept;
 
-    Chunk(const Chunk&) noexcept = default;
+    Chunk(const Chunk&) = delete;
 
-    Chunk(Chunk&&) noexcept = default;
+    Chunk(Chunk&& other) noexcept;
 
-    Chunk& operator=(const Chunk&) noexcept = default;
+    Chunk& operator=(const Chunk&) = delete;
 
-    Chunk& operator=(Chunk&&) noexcept = default;
+    Chunk& operator=(Chunk&& other) noexcept;
 
     ~Chunk() noexcept = default;
 
