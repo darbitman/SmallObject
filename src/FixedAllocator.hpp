@@ -1,54 +1,53 @@
-//****************************************************************************//
-// FixedAllocator.h                                                           //
-// Author: Dmitriy A                                                          //
-// Description:                                                               //
-//    Allocates objects of a given size                                       //
-//    Caches LRU chunk for alloc and dealloc                                  //
-//****************************************************************************//
-
-
 #pragma once
+
 #include <cstdlib>
 #include <vector>
-#include "Chunk.h"
 
-#ifndef DEFAULT_CHUNK_SIZE
-#define DEFAULT_CHUNK_SIZE 48
-#endif
+#include "Chunk.hpp"
 
-class FixedAllocator {
-public:
-  // create object to handle objects of blockSize bytes
-  explicit FixedAllocator(size_t blockSize = 0);
+class FixedAllocator
+{
+  public:
+    /// @brief Create a FixedAlloctor object to handle allocating memory to objects of blockSize
+    /// bytes
+    /// @param blockSize Size of objects (in bytes)
+    explicit FixedAllocator(size_t blockSize) noexcept;
 
-  // release chunk back to OS
-  ~FixedAllocator();
+    /// @brief release managed Chunks back to OS
+    ~FixedAllocator() noexcept;
 
-  // allocate memory and return pointer
-  void* Allocate();
+    /// @brief Allocate memory and return pointer to the block of memory
+    void* Allocate() noexcept;
 
-  // return memory back to chunk handler
-  void Deallocate(void* p);
+    /// @brief Return memory back to Chunk handler
+    void Deallocate(void* pObject) noexcept;
 
-  size_t getBlockSize() const;
+    /// @brief Return the size (in bytes) of the objects that this FixedAllocator allocates
+    size_t getBlockSize() const noexcept;
 
-private:
-  size_t blockSize_;
-  unsigned char numBlocks_;
+  private:
+    using Chunks = std::vector<Chunk>;
 
-  // holds all chunks that handle blockSize requests
-  typedef std::vector<Chunk> Chunks;
-  Chunks chunks_;
+    /// The default size (in bytes) of a Chunk
+    static constexpr size_t DEFAULT_CHUNK_SIZE = 4096;
 
-  // LRU chunk that handled an alloc
-  Chunk* pAllocChunk_;
+    /// @brief Find Chunk that allocated pointer pObject
+    /// @param pObject
+    Chunk* FindChunkOwner(void* pObject) noexcept;
 
-  // LRU chunk that handled a dealloc
-  Chunk* pDeallocChunk_;
+    /// @brief Perform the deallocation of pointer pObject
+    void DoDeallocate(void* pObject) noexcept;
 
-  // find chunk that allocated pointer p
-  Chunk* findNearby(void* p);
+    // LRU chunk that handled an alloc
+    Chunk* pAllocChunk_;
 
-  // perform the deallocation of pointer p
-  void DoDeallocate(void* p);
+    // LRU chunk that handled a dealloc
+    Chunk* pDeallocChunk_;
+
+    size_t blockSize_;
+
+    uint8_t numBlocks_;
+
+    // holds all chunks that handle blockSize requests
+    Chunks chunks_;
 };
