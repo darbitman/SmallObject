@@ -108,7 +108,7 @@ Chunk* FixedAllocator::FindChunkOwner(void* pObject) noexcept
         if (pLowChunk != nullptr)
         {
             // pObject lies in the address space of a Chunk pointed to by pLowChunk
-            if (pLowChunk->IsInChunk(pObject, blockSize_, numBlocks_))
+            if (pLowChunk->IsInChunk(pObject))
             {
                 return pLowChunk;
             }
@@ -126,7 +126,7 @@ Chunk* FixedAllocator::FindChunkOwner(void* pObject) noexcept
         if (pHighChunk != nullptr)
         {
             // pObject lies in the address space of a Chunk pointed to by pHighChunk
-            if (pHighChunk->IsInChunk(pObject, blockSize_, numBlocks_))
+            if (pHighChunk->IsInChunk(pObject))
             {
                 return pHighChunk;
             }
@@ -143,7 +143,7 @@ Chunk* FixedAllocator::FindChunkOwner(void* pObject) noexcept
 
 void FixedAllocator::DoDeallocate(void* pObject) noexcept
 {
-    assert(pDeallocChunk_->IsInChunk(pObject, blockSize_, numBlocks_));
+    assert(pDeallocChunk_->IsInChunk(pObject));
 
     pDeallocChunk_->Deallocate(pObject, blockSize_, numBlocks_);
 
