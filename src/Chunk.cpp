@@ -1,53 +1,17 @@
 #include "Chunk.hpp"
 
-#include <cassert>
-
-using std::swap;
-
 Chunk::Chunk() noexcept
     : pData_(nullptr), pDataEnd_(nullptr), nextAvailableBlock_(0), blocksAvailable_(0)
 {
 }
 
-Chunk::Chunk(Chunk&& other) noexcept
-    : pData_(nullptr), pDataEnd_(nullptr), nextAvailableBlock_(0), blocksAvailable_(0)
-{
-    swap(pData_, other.pData_);
-
-    uint8_t** ppOtherDataEnd = const_cast<uint8_t**>(&(other.pDataEnd_));
-    uint8_t** ppDataEnd = const_cast<uint8_t**>(&pDataEnd_);
-    swap(*ppDataEnd, *ppOtherDataEnd);
-
-    swap(nextAvailableBlock_, other.nextAvailableBlock_);
-    swap(blocksAvailable_, other.blocksAvailable_);
-}
-
-Chunk& Chunk::operator=(Chunk&& other) noexcept
-{
-    swap(pData_, other.pData_);
-
-    uint8_t** ppOtherDataEnd = const_cast<uint8_t**>(&(other.pDataEnd_));
-    uint8_t** ppDataEnd = const_cast<uint8_t**>(&pDataEnd_);
-    swap(*ppDataEnd, *ppOtherDataEnd);
-
-    swap(nextAvailableBlock_, other.nextAvailableBlock_);
-    swap(blocksAvailable_, other.blocksAvailable_);
-
-    return *this;
-}
-
 void Chunk::Init(size_t blockSize, uint8_t numBlocks) noexcept
 {
-    assert(blockSize > 0);
-    assert(numBlocks > 0);
-
     // allocate new memory
     pData_ = new uint8_t[blockSize * numBlocks];
 
-    // Update data end pointer (const hack to be able to modify a const pointer after
-    // initialization)
-    uint8_t** ppDataEnd = const_cast<uint8_t**>(&pDataEnd_);
-    *ppDataEnd = pData_ + (blockSize * numBlocks);
+    // update data end pointer
+    pDataEnd_ = pData_ + (blockSize * numBlocks);
 
     // initialize blocks
     Reset(blockSize, numBlocks);
@@ -72,13 +36,6 @@ void Chunk::Deallocate(void* pBlock, size_t blockSize, size_t numBlocks) noexcep
 {
     uint8_t* pBlockToRelease = static_cast<uint8_t*>(pBlock);
 
-    // boundary check
-    assert(pBlockToRelease >= pData_);
-    assert(pBlockToRelease < (pData_ + (numBlocks * blockSize)));
-
-    // Alignment check
-    assert((pBlockToRelease - pData_) % blockSize == 0);
-
     // update current block's "list pointer" to point to the block that was previously the first
     // available block
     *pBlockToRelease = nextAvailableBlock_;
@@ -86,20 +43,11 @@ void Chunk::Deallocate(void* pBlock, size_t blockSize, size_t numBlocks) noexcep
     // set the first available block to "point" at the block that is being deallocated
     nextAvailableBlock_ = static_cast<uint8_t>((pBlockToRelease - pData_) / blockSize);
 
-    // Truncation check
-    assert(nextAvailableBlock_ == (pBlockToRelease - pData_) / blockSize);
-
     ++blocksAvailable_;
 }
 
 void Chunk::Reset(size_t blockSize, uint8_t numBlocks)
 {
-    assert(blockSize > 0);
-    assert(numBlocks > 0);
-
-    // overflow check
-    assert((blockSize * numBlocks) / blockSize == numBlocks);
-
     nextAvailableBlock_ = 0;
 
     blocksAvailable_ = numBlocks;
@@ -113,9 +61,16 @@ void Chunk::Reset(size_t blockSize, uint8_t numBlocks)
     }
 }
 
-void Chunk::Release() noexcept { delete[] pData_; }
+void Chunk::Release() noexcept
+{
+    delete[] pData_;
+    pData_ = nullptr;
+    pDataEnd_ = nullptr;
+    nextAvailableBlock_ = 0;
+    blocksAvailable_ = 0;
+}
 
-bool Chunk::IsInChunk(const void* pBlock, size_t blockSize, size_t numBlocks) const noexcept
+bool Chunk::IsInChunk(const void* pBlock) const noexcept
 {
     auto pBlockToCheck = reinterpret_cast<const uint8_t*>(pBlock);
 

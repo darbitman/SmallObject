@@ -2,20 +2,15 @@
 
 #include <cstdint>
 #include <cstdlib>
-#include <stack>
 
 class Chunk
 {
   public:
     Chunk() noexcept;
 
-    Chunk(const Chunk&) = delete;
+    Chunk(Chunk&& other) noexcept = default;
 
-    Chunk(Chunk&& other) noexcept;
-
-    Chunk& operator=(const Chunk&) = delete;
-
-    Chunk& operator=(Chunk&& other) noexcept;
+    Chunk& operator=(Chunk&& other) noexcept = default;
 
     ~Chunk() noexcept = default;
 
@@ -27,7 +22,7 @@ class Chunk
     /// @brief Allocate memory and return a pointer to it to the client
     /// @param blockSize Size of the block to allocate memory for
     /// @return void* Returns a pointer to a block of size blockSize (in bytes). Returns a nullptr
-    /// if no free memory exists.
+    /// if no free memory exists or if the memory has not been initialized with the Init call.
     void* Allocate(size_t blockSize) noexcept;
 
     /// @brief Deallocate memory and add back to pool
@@ -42,22 +37,24 @@ class Chunk
     /// @brief Checks if the block pointed to by pBlock falls somewhere in the memory space of this
     /// Chunk
     /// @param pBlock The pointer to a block that needs to be checked
-    /// @param blockSize Size of each block (in bytes)
-    /// @param numBlocks Total number of blocks in the memory space of this Chunk
-    bool IsInChunk(const void* pBlock, size_t blockSize, size_t numBlocks) const noexcept;
+    bool IsInChunk(const void* pBlock) const noexcept;
+
+    /// Deleted to prevent misuse
+    Chunk(const Chunk&) = delete;
+    Chunk& operator=(const Chunk&) = delete;
 
   private:
-    /// Points to the beginning of the memory space in this Chunk
-    uint8_t* pData_;
-
     /// @brief Initialize the blocks in this Chunk in the form of a "linked list". Does not zero out
     /// memory.
     /// @param blockSize Size of each block (in bytes)
     /// @param numBlocks Total number of blocks in the memory space of this Chunk
     void Reset(size_t blockSize, uint8_t numBlocks);
 
+    /// Points to the beginning of the memory space in this Chunk
+    uint8_t* pData_;
+
     /// Points to the block past the last one in memory
-    const uint8_t* const pDataEnd_;
+    const uint8_t* pDataEnd_;
 
     uint8_t nextAvailableBlock_;
 
