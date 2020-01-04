@@ -5,3 +5,5 @@ add_library(
     STATIC
     ${SmallObject_SRC}
 )
+
+add_subdirectory(test)
