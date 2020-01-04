@@ -19,7 +19,9 @@ class Chunk
 
     ~Chunk() noexcept = default;
 
-    /// @brief Initialize Chunk memory
+    /// @brief Initialize Chunk memory address space
+    /// @param blockSize The size of each object (in bytes)
+    /// @param numBlocks The number of objects in this Chunk
     void Init(size_t blockSize, uint8_t numBlocks) noexcept;
 
     /// @brief Allocate memory and return a pointer to it to the client
