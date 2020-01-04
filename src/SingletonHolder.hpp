@@ -12,10 +12,12 @@ class SingletonHolder
         return instance;
     }
 
-    SingletonHolder() = delete;
-    ~SingletonHolder() = delete;
     SingletonHolder(const SingletonHolder<SingletonType, maxObjectSize>&) = delete;
     SingletonHolder(SingletonHolder<SingletonType, maxObjectSize>&&) = delete;
     SingletonHolder& operator=(const SingletonHolder<SingletonType, maxObjectSize>&) = delete;
     SingletonHolder& operator=(SingletonHolder<SingletonType, maxObjectSize>&&) = delete;
+
+  private:
+    SingletonHolder() noexcept = default;
+    ~SingletonHolder() noexcept = default;
 };
