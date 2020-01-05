@@ -39,13 +39,6 @@ void* FixedAllocator::Allocate() noexcept
         for (Chunks::iterator chunks_iter = chunks_.begin(), chunks_end = chunks_.end();;
              ++chunks_iter)
         {
-            // Found a Chunk with available space
-            if (chunks_iter->blocksAvailable_ > 0)
-            {
-                pAllocChunk_ = &(*chunks_iter);
-                break;
-            }
-
             // Couldn't find a Chunk with any available space, so create a new Chunk
             if (chunks_iter == chunks_end)
             {
@@ -58,6 +51,13 @@ void* FixedAllocator::Allocate() noexcept
                 // Update Chunk cache pointers
                 pAllocChunk_ = &newChunk;
                 pDeallocChunk_ = &newChunk;
+                break;
+            }
+
+            // Found a Chunk with available space
+            if (chunks_iter->blocksAvailable_ > 0)
+            {
+                pAllocChunk_ = &(*chunks_iter);
                 break;
             }
         }
