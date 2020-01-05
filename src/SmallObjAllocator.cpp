@@ -46,8 +46,7 @@ void* SmallObjAllocator::Allocate(size_t numBytes) noexcept
         pLastDealloc_ = &(pool_.back());
     }
     pLastAlloc_ = &(*iter);
-    void* returnPtr = pLastAlloc_->Allocate();
-    return returnPtr;
+    return pLastAlloc_->Allocate();
 }
 
 void SmallObjAllocator::Deallocate(void* pObjectToDealloc, size_t numBytes) noexcept

@@ -12,7 +12,7 @@ class SmallObjAllocator
     /// @param maxObjectSize The maximum size (in bytes) of objects to allocate
     explicit SmallObjAllocator(size_t maxObjectSize) noexcept;
 
-    ~SmallObjAllocator() noexcept;
+    ~SmallObjAllocator() noexcept = default;
 
     /// @brief allocate memory
     /// @param numBytes The size (in bytes) of the object to allocate memory for
