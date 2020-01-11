@@ -36,7 +36,7 @@ class FixedAllocator
     using Chunks = std::vector<Chunk>;
 
     /// The default size (in bytes) of a Chunk
-    static constexpr size_t DEFAULT_CHUNK_SIZE = 4096;
+    static constexpr size_t DEFAULT_CHUNK_SIZE = 262144;
 
     /// @brief Find Chunk that allocated pointer pObject
     /// @param pObject
