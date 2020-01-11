@@ -7,7 +7,7 @@ FixedAllocator::FixedAllocator(size_t blockSize) noexcept
 {
     assert(blockSize > 0);
 
-    auto numBlocks = DEFAULT_CHUNK_SIZE / blockSize;
+    auto numBlocks = kDefaultChunkSize / blockSize;
 
     assert(numBlocks != 0);
 
@@ -20,6 +20,8 @@ FixedAllocator::FixedAllocator(size_t blockSize) noexcept
     numBlocks_ = static_cast<uint8_t>(numBlocks);
 
     assert(numBlocks_ == numBlocks);
+
+    chunks_.reserve(kDefaultVectorReservedSize);
 }
 
 FixedAllocator::~FixedAllocator() noexcept
