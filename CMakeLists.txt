@@ -12,4 +12,8 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
+if(${CMAKE_BUILD_TYPE} STREQUAL RELEASE)
+    add_definitions(-DNDEBUG)
+endif()
+
 add_subdirectory(src)
