@@ -6,5 +6,10 @@ add_library(
     ${SmallObject_SRC}
 )
 
-add_subdirectory(test)
-add_subdirectory(bench)
+if(BUILD_BENCHMARKS)
+    add_subdirectory(bench)
+endif()
+
+if(BUILD_UNIT_TESTS)
+    add_subdirectory(test)
+endif()

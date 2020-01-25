@@ -18,7 +18,7 @@ foreach(benchmark_file ${bench_SRC})
       ${benchmark_name}
       PUBLIC
         SmallObject
-        benchmark
+        benchmark::benchmark
         pthread
   )
 endforeach()
