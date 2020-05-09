@@ -54,11 +54,13 @@ void Chunk::Reset(size_t block_size, uint8_t num_blocks_) {
 }
 
 void Chunk::Release() noexcept {
-  delete[] p_data_;
-  p_data_               = nullptr;
-  p_data_end_           = nullptr;
-  next_available_block_ = 0;
-  blocks_available_     = 0;
+  if (p_data_ != nullptr) {
+    delete[] p_data_;
+    p_data_               = nullptr;
+    p_data_end_           = nullptr;
+    next_available_block_ = 0;
+    blocks_available_     = 0;
+  }
 }
 
 bool Chunk::IsInChunk(const void* p_block) const noexcept {
