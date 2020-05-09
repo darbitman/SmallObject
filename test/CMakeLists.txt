@@ -1,16 +1,15 @@
 set(
   libraries
+  SmallObject
   GTest::Main
   GTest::GTest
-  SmallObject
   pthread
+  project_warnings
 )
-
-set(additional_compiler_flags)
 
 if(ENABLE_CODE_COVERAGE)
   list(APPEND libraries gcov "--coverage")
-  list(APPEND additional_compiler_flags -fprofile-arcs -ftest-coverage)
+  set(additional_compiler_flags -fprofile-arcs -ftest-coverage)
 endif()
 
 set(include_dirs ${PROJECT_SOURCE_DIR}/src/)

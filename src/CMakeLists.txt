@@ -5,3 +5,9 @@ add_library(
     STATIC
     ${SmallObject_SRC}
 )
+
+target_link_libraries(
+    SmallObject
+    PRIVATE
+    project_warnings
+)
