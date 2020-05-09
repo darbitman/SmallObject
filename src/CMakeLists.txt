@@ -10,4 +10,5 @@ target_link_libraries(
     SmallObject
     PRIVATE
     project_warnings
+    code_coverage
 )

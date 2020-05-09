@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.14)
 
 project(helpers)
 
@@ -42,7 +42,13 @@ if(ENABLE_LINK_TIME_OPTIMIZATION)
   endif()
 endif()
 
+# Need compiler flags and linker flags for code coverage data
 option(ENABLE_CODE_COVERAGE "Generate code coverage data" OFF)
+add_library(code_coverage INTERFACE)
+if(ENABLE_CODE_COVERAGE)
+  target_compile_options(code_coverage INTERFACE -fprofile-arcs -ftest-coverage)
+  target_link_libraries(code_coverage INTERFACE gcov "--coverage")
+endif()
 
 # Use GTest::Main and GTest::GTest when linking libraries
 find_package(GTest)

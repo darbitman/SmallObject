@@ -19,7 +19,6 @@ foreach(benchmark_file ${bench_SRC})
       PUBLIC
         SmallObject
         benchmark::benchmark
-        pthread
         project_warnings
   )
 
