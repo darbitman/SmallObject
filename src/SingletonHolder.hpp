@@ -2,20 +2,25 @@
 
 #include <cstdlib>
 
-template <typename SingletonType, size_t maxObjectSize>
+template <typename SingletonType>
 class SingletonHolder {
  public:
-  static SingletonType& getInstance() {
-    static SingletonType instance(maxObjectSize);
-    return instance;
-  }
+  template <typename... Types>
+  static SingletonType& GetInstance(Types&&... constructor_args);
 
-  SingletonHolder(const SingletonHolder<SingletonType, maxObjectSize>&) = delete;
-  SingletonHolder(SingletonHolder<SingletonType, maxObjectSize>&&)      = delete;
-  SingletonHolder& operator=(const SingletonHolder<SingletonType, maxObjectSize>&) = delete;
-  SingletonHolder& operator=(SingletonHolder<SingletonType, maxObjectSize>&&) = delete;
+  SingletonHolder() noexcept                             = delete;
+  ~SingletonHolder() noexcept                            = delete;
+  SingletonHolder(const SingletonHolder<SingletonType>&) = delete;
+  SingletonHolder(SingletonHolder<SingletonType>&&)      = delete;
+  SingletonHolder& operator=(const SingletonHolder<SingletonType>&) = delete;
+  SingletonHolder& operator=(SingletonHolder<SingletonType>&&) = delete;
 
  private:
-  SingletonHolder() noexcept  = default;
-  ~SingletonHolder() noexcept = default;
 };
+
+template <typename SingletonType>
+template <typename... Types>
+SingletonType& SingletonHolder<SingletonType>::GetInstance(Types&&... constructor_args) {
+  static SingletonType instance(std::forward<Types>(constructor_args)...);
+  return instance;
+}
