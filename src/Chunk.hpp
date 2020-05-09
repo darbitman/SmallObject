@@ -29,7 +29,7 @@ class Chunk
     /// @param pBlock Pointer to the block to return to memory pool
     /// @param blockSize Size of each block (in bytes)
     /// @param numBlocks Total number of blocks in the memory space of this Chunk
-    void Deallocate(void* pBlock, size_t blockSize, size_t numBlocks) noexcept;
+    void Deallocate(void* pBlock, size_t blockSize) noexcept;
 
     /// @brief Return memory back to OS
     void Release() noexcept;

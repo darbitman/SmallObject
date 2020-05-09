@@ -32,7 +32,7 @@ void* Chunk::Allocate(size_t blockSize) noexcept
     return resultPtr;
 }
 
-void Chunk::Deallocate(void* pBlock, size_t blockSize, size_t numBlocks) noexcept
+void Chunk::Deallocate(void* pBlock, size_t blockSize) noexcept
 {
     uint8_t* pBlockToRelease = static_cast<uint8_t*>(pBlock);
 

@@ -91,8 +91,6 @@ Chunk* FixedAllocator::FindChunkOwner(void* pObject) noexcept
     assert(!chunks_.empty());
     assert(pDeallocChunk_ != nullptr);
 
-    const size_t chunkSize = numBlocks_ * blockSize_;
-
     Chunk* pLowChunk = pDeallocChunk_;
     Chunk* pHighChunk = pDeallocChunk_ + 1;
     Chunk* pLowChunkBound = &chunks_.front();
@@ -147,7 +145,7 @@ void FixedAllocator::DoDeallocate(void* pObject) noexcept
 {
     assert(pDeallocChunk_->IsInChunk(pObject));
 
-    pDeallocChunk_->Deallocate(pObject, blockSize_, numBlocks_);
+    pDeallocChunk_->Deallocate(pObject, blockSize_);
 
     // Check if the Chunk that just freed memory, has no allocated blocks
     // Can potentially remove the empty Chunk object if another empty one exists

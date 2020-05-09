@@ -36,7 +36,7 @@ TEST_F(ChunkTest, Allocate_Deallocate)
 
     EXPECT_EQ(c.IsInChunk(pAllocatedBlock), true);
 
-    c.Deallocate(pAllocatedBlock, DEFAULT_BLOCK_SIZE, DEFAULT_NUM_BLOCKS);
+    c.Deallocate(pAllocatedBlock, DEFAULT_BLOCK_SIZE);
 
     EXPECT_EQ(c.blocksAvailable_, DEFAULT_NUM_BLOCKS);
 
@@ -62,7 +62,7 @@ TEST_F(ChunkTest, AllocateAll_DeallocateAll)
 
     for (auto& pBlock : allocatedBlocks)
     {
-        c.Deallocate(pBlock, DEFAULT_BLOCK_SIZE, DEFAULT_NUM_BLOCKS);
+        c.Deallocate(pBlock, DEFAULT_BLOCK_SIZE);
     }
 
     EXPECT_EQ(c.blocksAvailable_, DEFAULT_NUM_BLOCKS);
