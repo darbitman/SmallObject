@@ -29,8 +29,7 @@ void* Chunk::Allocate(size_t blockSize) noexcept {
 void Chunk::Deallocate(void* pBlock, size_t blockSize) noexcept {
   uint8_t* pBlockToRelease = static_cast<uint8_t*>(pBlock);
 
-  // update current block's "list pointer" to point to the block that was previously the first
-  // available block
+  // update current block's "list pointer" to point to the block that was previously the first available block
   *pBlockToRelease = nextAvailableBlock_;
 
   // set the first available block to "point" at the block that is being deallocated
@@ -46,8 +45,7 @@ void Chunk::Reset(size_t blockSize, uint8_t numBlocks) {
 
   uint8_t* dataPtr = pData_;
   for (uint8_t i = 0; i != numBlocks; dataPtr += blockSize) {
-    // assign first byte in each block to the index of the next block
-    // ie linked list
+    // assign first byte in each block to the index of the next block (ie contiguous linked list)
     *dataPtr = ++i;
   }
 }
