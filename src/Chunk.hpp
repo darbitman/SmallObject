@@ -41,7 +41,7 @@ class Chunk {
   bool IsInChunk(const void* p_block) const noexcept;
 
   /// @brief
-  /// @return
+  /// @return uint8_t
   uint8_t GetNumBlocksAvailable() const noexcept;
 
   /// Deleted to prevent misuse
@@ -55,13 +55,13 @@ class Chunk {
   void Reset(size_t block_size, uint8_t num_blocks);
 
   /// Points to the beginning of the memory space in this Chunk
-  uint8_t* pData_;
+  uint8_t* p_data_;
 
   /// Points to the block past the last one in memory
-  const uint8_t* pDataEnd_;
+  const uint8_t* p_data_end_;
 
-  /// index into the pData_ array
-  uint8_t nextAvailableBlock_;
+  /// index into the p_data_ array
+  uint8_t next_available_block_;
 
   uint8_t blocks_available_;
 };
