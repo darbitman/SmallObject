@@ -87,7 +87,7 @@ FixedAllocator* SmallObjAllocator::FindAllocator(size_t obj_size) noexcept {
   // check current pool for FixedAllocator that services objects of at least obj_size
   // create a new FixedAllocator if one is not found append one that handles obj_size
   const auto allocator = std::lower_bound(pool_.begin(), pool_.end(), obj_size, CompareFixedAllocatorSize);
-  if (allocator != pool_.end() || allocator->getBlockSize() != obj_size) {
+  if (allocator == pool_.end() || allocator->getBlockSize() != obj_size) {
     const auto new_allocator = pool_.insert(allocator, FixedAllocator(obj_size));
 
     // update since old pointer may be invalid due to container changing size
