@@ -15,56 +15,73 @@ class ChunkTest : public ::testing::Test {
   Chunk c;
 };
 
-TEST_F(ChunkTest, Initialize) {
-  c.Init(kDefaultBlockSize, kDefaultNumBlocks);
-
-  EXPECT_EQ(c.GetNumBlocksAvailable(), kDefaultNumBlocks);
-
-  c.Release();
+TEST(ChunkTest, Uninitialized) {
+  Chunk c;
 
   EXPECT_EQ(c.GetNumBlocksAvailable(), 0);
+
+  EXPECT_EQ(c.Allocate(8), nullptr);
 }
 
-TEST_F(ChunkTest, AllocateWithoutInitialize) { EXPECT_EQ(c.Allocate(kDefaultBlockSize), nullptr); }
+TEST(ChunkTest, Initialize) {
+  Chunk c;
 
-TEST_F(ChunkTest, Allocate_Deallocate) {
-  c.Init(kDefaultBlockSize, kDefaultNumBlocks);
+  c.Init(8, 20);
 
-  auto pAllocatedBlock = c.Allocate(kDefaultBlockSize);
+  EXPECT_EQ(c.GetNumBlocksAvailable(), 20);
+}
 
-  EXPECT_EQ(c.GetNumBlocksAvailable(), kDefaultNumBlocks - 1);
+TEST(ChunkTest, AllocateDeallocate) {
+  Chunk c;
+
+  c.Init(8, 10);
+
+  auto pAllocatedBlock = c.Allocate(8);
+
+  EXPECT_EQ(c.GetNumBlocksAvailable(), 9);
 
   EXPECT_EQ(c.IsInChunk(pAllocatedBlock), true);
 
-  c.Deallocate(pAllocatedBlock, kDefaultBlockSize);
+  c.Deallocate(pAllocatedBlock, 8);
 
-  EXPECT_EQ(c.GetNumBlocksAvailable(), kDefaultNumBlocks);
-
-  c.Release();
+  EXPECT_EQ(c.GetNumBlocksAvailable(), 10);
 }
 
-TEST_F(ChunkTest, AllocateAll_DeallocateAll) {
-  c.Init(kDefaultBlockSize, kDefaultNumBlocks);
+TEST(ChunkTest, AllocateAll) {
+  Chunk c;
 
-  std::vector<void*> allocatedBlocks;
+  c.Init(8, 10);
 
-  allocatedBlocks.reserve(kDefaultNumBlocks);
+  std::vector<void*> allocated_blocks;
 
-  for (uint8_t i = 0; i < kDefaultNumBlocks; ++i) {
-    allocatedBlocks.push_back(c.Allocate(kDefaultBlockSize));
+  allocated_blocks.reserve(10);
+
+  for (uint8_t i = 0; i < 10; ++i) {
+    allocated_blocks.push_back(c.Allocate(8));
   }
 
   EXPECT_EQ(c.GetNumBlocksAvailable(), 0);
 
-  EXPECT_EQ(c.Allocate(kDefaultBlockSize), nullptr);
+  EXPECT_EQ(c.Allocate(8), nullptr);
 
-  for (auto& pBlock : allocatedBlocks) {
-    c.Deallocate(pBlock, kDefaultBlockSize);
+  for (auto& p_block : allocated_blocks) {
+    c.Deallocate(p_block, 8);
   }
 
-  EXPECT_EQ(c.GetNumBlocksAvailable(), kDefaultNumBlocks);
+  EXPECT_EQ(c.GetNumBlocksAvailable(), 10);
+}
+
+TEST(ChunkTest, ReleasingMemory) {
+  Chunk c;
 
   c.Release();
+
+  EXPECT_EQ(c.Allocate(8), nullptr);
+
+  c.Init(8, 10);
+  c.Release();
+
+  EXPECT_EQ(c.Allocate(8), nullptr);
 }
 
 }  // namespace
