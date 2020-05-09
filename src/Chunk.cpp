@@ -8,7 +8,7 @@ void Chunk::Init(size_t block_size, uint8_t num_blocks_) noexcept {
   // allocate new memory
   p_data_ = new uint8_t[block_size * num_blocks_];
 
-  // update data end pointer
+  // update data end pointer. Points at past-the-end block
   p_data_end_ = p_data_ + (block_size * num_blocks_);
 
   // initialize blocks
@@ -46,8 +46,9 @@ void Chunk::Reset(size_t block_size, uint8_t num_blocks_) {
   blocks_available_ = num_blocks_;
 
   uint8_t* p_data = p_data_;
-  for (uint8_t i = 0; i != num_blocks_; p_data += block_size) {
+  for (uint8_t i = 0; i < num_blocks_; p_data += block_size) {
     // assign first byte in each block to the index of the next block (ie contiguous linked list)
+    // last block's 'pointer' points at past-the-end block
     *p_data = ++i;
   }
 }
@@ -61,7 +62,7 @@ void Chunk::Release() noexcept {
 }
 
 bool Chunk::IsInChunk(const void* p_block) const noexcept {
-  auto p_block_to_check = reinterpret_cast<const uint8_t*>(p_block);
+  auto p_block_to_check = static_cast<const uint8_t*>(p_block);
 
   // check if p_block falls within the memory space of this Chunk
   return (p_block_to_check >= p_data_) && (p_block_to_check < p_data_end_);
