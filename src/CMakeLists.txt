@@ -5,11 +5,3 @@ add_library(
     STATIC
     ${SmallObject_SRC}
 )
-
-if(BUILD_BENCHMARKS)
-    add_subdirectory(bench)
-endif()
-
-if(BUILD_UNIT_TESTS)
-    add_subdirectory(test)
-endif()
