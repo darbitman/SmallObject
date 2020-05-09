@@ -12,6 +12,8 @@ bool CompareFixedAllocatorSize(const alloc::FixedAllocator& FixedAllocatorObj, s
 
 }  // namespace
 
+namespace alloc {
+
 SmallObjAllocator::SmallObjAllocator(size_t maxObjectSize) noexcept
     : maxObjectSize_(maxObjectSize), pLastAlloc_(nullptr), pLastDealloc_(nullptr) {}
 
@@ -66,3 +68,5 @@ void SmallObjAllocator::Deallocate(void* pObjectToDealloc, size_t numBytes) noex
   pLastDealloc_ = &(*iter);
   pLastDealloc_->Deallocate(pObjectToDealloc);
 }
+
+}  // namespace alloc

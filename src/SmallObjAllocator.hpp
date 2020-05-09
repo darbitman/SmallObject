@@ -5,6 +5,8 @@
 
 #include "FixedAllocator.hpp"
 
+namespace alloc {
+
 class SmallObjAllocator {
  public:
   /// @brief create a SmallObjAllocator to handle allocations up to a maximum size (in bytes)
@@ -21,18 +23,20 @@ class SmallObjAllocator {
   void Deallocate(void* pObjectToDealloc, size_t numBytes) noexcept;
 
  private:
-  using Pool = std::vector<alloc::FixedAllocator>;
+  using Pool = std::vector<FixedAllocator>;
 
   // max num of bytes handled
   size_t maxObjectSize_;
 
   // LRU FixedAllocator
-  alloc::FixedAllocator* pLastAlloc_;
+  FixedAllocator* pLastAlloc_;
 
   // LRU FIxedAllocator
-  alloc::FixedAllocator* pLastDealloc_;
+  FixedAllocator* pLastDealloc_;
 
   // holds pool of FixedAllocator objects that handle various sized requests
   // Sorted by the size of the objects each FixedAllocator object handles
   Pool pool_;
 };
+
+}  // namespace alloc
