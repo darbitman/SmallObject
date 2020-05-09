@@ -30,7 +30,7 @@ if(ENABLE_CCACHE)
 endif()
 
 # link time optimization/interprocedural optimization
-option(ENABLE_LINK_TIME_OPTIMIZATION "Optimize during link time" ON)
+option(ENABLE_LINK_TIME_OPTIMIZATION "Optimize during link time" OFF)
 if(ENABLE_LINK_TIME_OPTIMIZATION)
   cmake_policy(SET CMP0069 NEW)
   include(CheckIPOSupported)
