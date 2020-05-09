@@ -7,14 +7,6 @@
 namespace alloc {
 namespace {
 
-class ChunkTest : public ::testing::Test {
- protected:
-  static constexpr size_t  kDefaultBlockSize = 8;
-  static constexpr uint8_t kDefaultNumBlocks = 10;
-
-  Chunk c;
-};
-
 TEST(ChunkTest, Uninitialized) {
   Chunk c;
 
