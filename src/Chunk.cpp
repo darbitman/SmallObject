@@ -1,6 +1,8 @@
 #include "Chunk.hpp"
 
-Chunk::Chunk() noexcept : pData_(nullptr), pDataEnd_(nullptr), nextAvailableBlock_(0), blocksAvailable_(0) {}
+namespace alloc {
+
+Chunk::Chunk() noexcept : pData_(nullptr), pDataEnd_(nullptr), nextAvailableBlock_(0), blocks_available_(0) {}
 
 void Chunk::Init(size_t blockSize, uint8_t numBlocks) noexcept {
   // allocate new memory
@@ -14,7 +16,7 @@ void Chunk::Init(size_t blockSize, uint8_t numBlocks) noexcept {
 }
 
 void* Chunk::Allocate(size_t blockSize) noexcept {
-  if (blocksAvailable_ == 0) {
+  if (blocks_available_ == 0) {
     return nullptr;
   }
 
@@ -22,7 +24,7 @@ void* Chunk::Allocate(size_t blockSize) noexcept {
 
   // Update nextAvailableBlock_ to point to the next block
   nextAvailableBlock_ = *resultPtr;
-  --blocksAvailable_;
+  --blocks_available_;
   return resultPtr;
 }
 
@@ -35,13 +37,13 @@ void Chunk::Deallocate(void* pBlock, size_t blockSize) noexcept {
   // set the first available block to "point" at the block that is being deallocated
   nextAvailableBlock_ = static_cast<uint8_t>((pBlockToRelease - pData_) / blockSize);
 
-  ++blocksAvailable_;
+  ++blocks_available_;
 }
 
 void Chunk::Reset(size_t blockSize, uint8_t numBlocks) {
   nextAvailableBlock_ = 0;
 
-  blocksAvailable_ = numBlocks;
+  blocks_available_ = numBlocks;
 
   uint8_t* dataPtr = pData_;
   for (uint8_t i = 0; i != numBlocks; dataPtr += blockSize) {
@@ -55,7 +57,7 @@ void Chunk::Release() noexcept {
   pData_              = nullptr;
   pDataEnd_           = nullptr;
   nextAvailableBlock_ = 0;
-  blocksAvailable_    = 0;
+  blocks_available_   = 0;
 }
 
 bool Chunk::IsInChunk(const void* pBlock) const noexcept {
@@ -64,3 +66,7 @@ bool Chunk::IsInChunk(const void* pBlock) const noexcept {
   // check if pBlock falls within the memory space of this Chunk
   return (pBlockToCheck >= pData_) && (pBlockToCheck < pDataEnd_);
 }
+
+uint8_t Chunk::GetNumBlocksAvailable() const noexcept { return blocks_available_; }
+
+}  // namespace alloc

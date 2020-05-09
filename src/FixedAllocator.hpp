@@ -32,7 +32,7 @@ class FixedAllocator {
   FixedAllocator& operator=(const FixedAllocator&) noexcept = delete;
 
  private:
-  using Chunks = std::vector<Chunk>;
+  using Chunks = std::vector<alloc::Chunk>;
 
   /// The default size (in bytes) of a Chunk
   static constexpr size_t kDefaultChunkSize = 262144;
@@ -42,16 +42,16 @@ class FixedAllocator {
 
   /// @brief Find Chunk that allocated pointer pObject
   /// @param pObject
-  Chunk* FindChunkOwner(void* pObject) noexcept;
+  alloc::Chunk* FindChunkOwner(void* pObject) noexcept;
 
   /// @brief Perform the deallocation of pointer pObject
   void DoDeallocate(void* pObject) noexcept;
 
   // LRU chunk that handled an alloc
-  Chunk* pAllocChunk_;
+  alloc::Chunk* pAllocChunk_;
 
   // LRU chunk that handled a dealloc
-  Chunk* pDeallocChunk_;
+  alloc::Chunk* pDeallocChunk_;
 
   size_t blockSize_;
 

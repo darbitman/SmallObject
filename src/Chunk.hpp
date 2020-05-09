@@ -3,39 +3,46 @@
 #include <cstdint>
 #include <cstdlib>
 
+namespace alloc {
+
 class Chunk {
  public:
   Chunk() noexcept;
 
-  Chunk(Chunk&& other) noexcept = default;
+  Chunk(Chunk&&) noexcept = default;
 
-  Chunk& operator=(Chunk&& other) noexcept = default;
+  Chunk& operator=(Chunk&&) noexcept = default;
 
   ~Chunk() noexcept = default;
 
   /// @brief Initialize Chunk memory address space
-  /// @param blockSize The size of each object (in bytes)
-  /// @param numBlocks The number of objects in this Chunk
-  void Init(size_t blockSize, uint8_t numBlocks) noexcept;
+  /// @param block_size The size of each object (in bytes)
+  /// @param num_blocks The number of objects in this Chunk
+  void Init(size_t block_size, uint8_t num_blocks) noexcept;
 
   /// @brief Allocate memory and return a pointer to it to the client
-  /// @param blockSize Size of the block to allocate memory for
-  /// @return void* Returns a pointer to a block of size blockSize (in bytes). Returns a nullptr
+  /// @param block_size Size of the block to allocate memory for
+  /// @return void* Returns a pointer to a block of size block_size (in bytes). Returns a nullptr
   /// if no free memory exists or if the memory has not been initialized with the Init call.
-  void* Allocate(size_t blockSize) noexcept;
+  void* Allocate(size_t block_size) noexcept;
 
   /// @brief Deallocate memory and add back to pool
-  /// @param pBlock Pointer to the block to return to memory pool
-  /// @param blockSize Size of each block (in bytes)
-  /// @param numBlocks Total number of blocks in the memory space of this Chunk
-  void Deallocate(void* pBlock, size_t blockSize) noexcept;
+  /// @param p_block Pointer to the block to return to memory pool
+  /// @param block_size Size of each block (in bytes)
+  /// @param num_blocks Total number of blocks in the memory space of this Chunk
+  void Deallocate(void* p_block, size_t block_size) noexcept;
 
   /// @brief Return memory back to OS
   void Release() noexcept;
 
-  /// @brief Checks if the block pointed to by pBlock falls somewhere in the memory space of this Chunk
-  /// @param pBlock The pointer to a block that needs to be checked
-  bool IsInChunk(const void* pBlock) const noexcept;
+  /// @brief Checks if the block pointed to by the pointer falls somewhere in the memory space of this Chunk
+  /// @param p_block The pointer to a block that needs to be checked
+  /// @return bool Returns true if the block is in this Chunk's memory. False, otherwise.
+  bool IsInChunk(const void* p_block) const noexcept;
+
+  /// @brief
+  /// @return
+  uint8_t GetNumBlocksAvailable() const noexcept;
 
   /// Deleted to prevent misuse
   Chunk(const Chunk&) = delete;
@@ -43,9 +50,9 @@ class Chunk {
 
  private:
   /// @brief Initialize the blocks in this Chunk in the form of a "linked list". Does not zero out memory
-  /// @param blockSize Size of each block (in bytes)
-  /// @param numBlocks Total number of blocks in the memory space of this Chunk
-  void Reset(size_t blockSize, uint8_t numBlocks);
+  /// @param block_size Size of each block (in bytes)
+  /// @param num_blocks Total number of blocks in the memory space of this Chunk
+  void Reset(size_t block_size, uint8_t num_blocks);
 
   /// Points to the beginning of the memory space in this Chunk
   uint8_t* pData_;
@@ -56,6 +63,7 @@ class Chunk {
   /// index into the pData_ array
   uint8_t nextAvailableBlock_;
 
- public:
-  uint8_t blocksAvailable_;
+  uint8_t blocks_available_;
 };
+
+}  // namespace alloc

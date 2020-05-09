@@ -29,7 +29,7 @@ FixedAllocator::~FixedAllocator() noexcept {
 }
 
 void* FixedAllocator::Allocate() noexcept {
-  if (pAllocChunk_ == nullptr || pAllocChunk_->blocksAvailable_ == 0) {
+  if (pAllocChunk_ == nullptr || pAllocChunk_->GetNumBlocksAvailable() == 0) {
     // no chunk exists or no available memory in current chunk
     // Try to find one (linear search)
     for (Chunks::iterator chunks_iter = chunks_.begin(), chunks_end = chunks_.end();; ++chunks_iter) {
@@ -48,7 +48,7 @@ void* FixedAllocator::Allocate() noexcept {
       }
 
       // Found a Chunk with available space
-      if (chunks_iter->blocksAvailable_ > 0) {
+      if (chunks_iter->GetNumBlocksAvailable() > 0) {
         pAllocChunk_ = &(*chunks_iter);
         break;
       }
@@ -56,7 +56,7 @@ void* FixedAllocator::Allocate() noexcept {
   }
 
   assert(pAllocChunk_ != nullptr);
-  assert(pAllocChunk_->blocksAvailable_ > 0);
+  assert(pAllocChunk_->GetNumBlocksAvailable() > 0);
 
   return pAllocChunk_->Allocate(blockSize_);
 }
@@ -75,14 +75,14 @@ void FixedAllocator::Deallocate(void* pObject) noexcept {
 
 size_t FixedAllocator::getBlockSize() const noexcept { return blockSize_; }
 
-Chunk* FixedAllocator::FindChunkOwner(void* pObject) noexcept {
+alloc::Chunk* FixedAllocator::FindChunkOwner(void* pObject) noexcept {
   assert(!chunks_.empty());
   assert(pDeallocChunk_ != nullptr);
 
-  Chunk* pLowChunk       = pDeallocChunk_;
-  Chunk* pHighChunk      = pDeallocChunk_ + 1;
-  Chunk* pLowChunkBound  = &chunks_.front();
-  Chunk* pHighChunkBound = &chunks_.back() + 1;
+  alloc::Chunk* pLowChunk       = pDeallocChunk_;
+  alloc::Chunk* pHighChunk      = pDeallocChunk_ + 1;
+  alloc::Chunk* pLowChunkBound  = &chunks_.front();
+  alloc::Chunk* pHighChunkBound = &chunks_.back() + 1;
 
   // special case: pDeallocChunk_ is the last Chunk in the vector
   if (pHighChunk == pHighChunkBound) {
@@ -126,13 +126,13 @@ void FixedAllocator::DoDeallocate(void* pObject) noexcept {
 
   // Check if the Chunk that just freed memory, has no allocated blocks
   // Can potentially remove the empty Chunk object if another empty one exists
-  if (pDeallocChunk_->blocksAvailable_ == numBlocks_) {
+  if (pDeallocChunk_->GetNumBlocksAvailable() == numBlocks_) {
     // pDeallocChunk_ has all blocks freed
     // check if another chunk is empty in order to release a Chunk
-    Chunk* const pLastChunk = &chunks_.back();
+    alloc::Chunk* const pLastChunk = &chunks_.back();
 
     if (pLastChunk == pDeallocChunk_) {
-      if (chunks_.size() > 1 && pLastChunk[-1].blocksAvailable_ == numBlocks_) {
+      if (chunks_.size() > 1 && pLastChunk[-1].GetNumBlocksAvailable() == numBlocks_) {
         // have more than 1 Chunk object and last 2 Chunk objets are empty
         // can delete the last one
         pLastChunk->Release();
@@ -147,7 +147,7 @@ void FixedAllocator::DoDeallocate(void* pObject) noexcept {
     // if empty, release it, move pDeallocChunk_ to the back since it's also empty, then change
     // pointer pAllocChunk to point to pDeallocChunk since it's empty and that's where free
     // blocks will be allocated from
-    if (pLastChunk->blocksAvailable_ == numBlocks_) {
+    if (pLastChunk->GetNumBlocksAvailable() == numBlocks_) {
       pLastChunk->Release();
       chunks_.pop_back();
       std::swap(*pDeallocChunk_, chunks_.back());
