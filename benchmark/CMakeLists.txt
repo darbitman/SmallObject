@@ -20,5 +20,12 @@ foreach(benchmark_file ${bench_SRC})
         SmallObject
         benchmark::benchmark
         pthread
+        project_warnings
+  )
+
+  set_target_properties(
+    ${benchmark_name}
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/bench"
   )
 endforeach()
