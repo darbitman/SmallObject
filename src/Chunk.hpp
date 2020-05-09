@@ -33,8 +33,7 @@ class Chunk {
   /// @brief Return memory back to OS
   void Release() noexcept;
 
-  /// @brief Checks if the block pointed to by pBlock falls somewhere in the memory space of this
-  /// Chunk
+  /// @brief Checks if the block pointed to by pBlock falls somewhere in the memory space of this Chunk
   /// @param pBlock The pointer to a block that needs to be checked
   bool IsInChunk(const void* pBlock) const noexcept;
 
@@ -43,8 +42,7 @@ class Chunk {
   Chunk& operator=(const Chunk&) = delete;
 
  private:
-  /// @brief Initialize the blocks in this Chunk in the form of a "linked list". Does not zero out
-  /// memory.
+  /// @brief Initialize the blocks in this Chunk in the form of a "linked list". Does not zero out memory
   /// @param blockSize Size of each block (in bytes)
   /// @param numBlocks Total number of blocks in the memory space of this Chunk
   void Reset(size_t blockSize, uint8_t numBlocks);
@@ -55,6 +53,7 @@ class Chunk {
   /// Points to the block past the last one in memory
   const uint8_t* pDataEnd_;
 
+  /// index into the pData_ array
   uint8_t nextAvailableBlock_;
 
  public:
