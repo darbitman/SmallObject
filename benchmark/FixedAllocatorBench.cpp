@@ -3,7 +3,7 @@
 #include "FixedAllocator.hpp"
 
 static void BM_AllocateUsingFixedAllocator(benchmark::State& state) {
-  FixedAllocator allocator(size_t(state.range(0)));
+  alloc::FixedAllocator allocator(size_t(state.range(0)));
 
   for (auto _ : state) {
     auto* p_memory = allocator.Allocate();

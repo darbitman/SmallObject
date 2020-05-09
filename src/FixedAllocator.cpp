@@ -2,6 +2,8 @@
 
 #include <cassert>
 
+namespace alloc {
+
 FixedAllocator::FixedAllocator(size_t blockSize) noexcept
     : pAllocChunk_(nullptr), pDeallocChunk_(nullptr), blockSize_(blockSize), numBlocks_(0) {
   assert(blockSize > 0);
@@ -164,3 +166,5 @@ void FixedAllocator::DoDeallocate(void* pObject) noexcept {
     }
   }
 }
+
+}  // namespace alloc

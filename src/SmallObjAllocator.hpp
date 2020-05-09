@@ -21,16 +21,16 @@ class SmallObjAllocator {
   void Deallocate(void* pObjectToDealloc, size_t numBytes) noexcept;
 
  private:
-  using Pool = std::vector<FixedAllocator>;
+  using Pool = std::vector<alloc::FixedAllocator>;
 
   // max num of bytes handled
   size_t maxObjectSize_;
 
   // LRU FixedAllocator
-  FixedAllocator* pLastAlloc_;
+  alloc::FixedAllocator* pLastAlloc_;
 
   // LRU FIxedAllocator
-  FixedAllocator* pLastDealloc_;
+  alloc::FixedAllocator* pLastDealloc_;
 
   // holds pool of FixedAllocator objects that handle various sized requests
   // Sorted by the size of the objects each FixedAllocator object handles

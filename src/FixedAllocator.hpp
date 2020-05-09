@@ -5,6 +5,8 @@
 
 #include "Chunk.hpp"
 
+namespace alloc {
+
 class FixedAllocator {
  public:
   /// @brief Create a FixedAlloctor object to handle allocating memory to objects of blockSize
@@ -60,3 +62,5 @@ class FixedAllocator {
   // holds all chunks that handle blockSize requests
   Chunks chunks_;
 };
+
+}  // namespace alloc

@@ -5,9 +5,11 @@
 #include <iostream>
 
 namespace {
-bool CompareFixedAllocatorSize(const FixedAllocator& FixedAllocatorObj, size_t maxObjectSize) {
+
+bool CompareFixedAllocatorSize(const alloc::FixedAllocator& FixedAllocatorObj, size_t maxObjectSize) {
   return FixedAllocatorObj.getBlockSize() < maxObjectSize;
 }
+
 }  // namespace
 
 SmallObjAllocator::SmallObjAllocator(size_t maxObjectSize) noexcept
@@ -33,7 +35,7 @@ void* SmallObjAllocator::Allocate(size_t numBytes) noexcept {
   // numBytes. Check to make sure a FixedAllocator object exists that handles objects of size
   // numBytes
   if (iter == pool_.end() || iter->getBlockSize() != numBytes) {
-    iter          = pool_.insert(iter, FixedAllocator(numBytes));
+    iter          = pool_.insert(iter, alloc::FixedAllocator(numBytes));
     pLastDealloc_ = &(pool_.back());
   }
   pLastAlloc_ = &(*iter);
