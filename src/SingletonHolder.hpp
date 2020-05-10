@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <utility>
 
 template <typename SingletonType>
 class SingletonHolder {

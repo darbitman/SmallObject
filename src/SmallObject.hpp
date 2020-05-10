@@ -2,8 +2,6 @@
 
 #include <cstdlib>
 
-#include "SmallObjAllocator.hpp"
-
 namespace alloc {
 
 class SmallObject {
