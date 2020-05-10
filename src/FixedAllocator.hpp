@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <vector>
 
-#include "Chunk.hpp"
+#include "CommonTypes.hpp"
 
 namespace alloc {
 
@@ -37,8 +37,6 @@ class FixedAllocator {
   FixedAllocator& operator=(const FixedAllocator&) noexcept = delete;
 
  private:
-  using Chunks = std::vector<Chunk>;
-
   /// The default size (in bytes) of a Chunk
   static constexpr size_t kDefaultChunkSize = 262144;
 
