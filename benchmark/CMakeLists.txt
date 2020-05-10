@@ -19,6 +19,7 @@ foreach(benchmark_file ${bench_SRC})
       PUBLIC
         SmallObject
         benchmark::benchmark
+        benchmark::benchmark_main
         project_warnings
   )
 
