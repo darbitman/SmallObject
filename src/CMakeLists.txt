@@ -12,3 +12,9 @@ target_link_libraries(
     project_warnings
     code_coverage
 )
+
+target_include_directories(
+    SmallObject
+    PUBLIC
+    ${PROJECT_SOURCE_DIR}/include
+)
