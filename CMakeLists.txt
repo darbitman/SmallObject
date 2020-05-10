@@ -46,8 +46,8 @@ endif()
 option(ENABLE_CODE_COVERAGE "Generate code coverage data" OFF)
 add_library(code_coverage INTERFACE)
 if(ENABLE_CODE_COVERAGE)
-  target_compile_options(code_coverage INTERFACE -fprofile-arcs -ftest-coverage)
-  target_link_libraries(code_coverage INTERFACE gcov "--coverage")
+  target_compile_options(code_coverage INTERFACE --coverage)
+  target_link_libraries(code_coverage INTERFACE "--coverage")
 endif()
 
 # Use GTest::Main and GTest::GTest when linking libraries
