@@ -43,11 +43,6 @@ class FixedAllocator {
   /// The default size (in number of Chunks) for the vector
   static constexpr size_t kDefaultNumberOfChunks = 100;
 
-  /// @brief Find Chunk that allocated pointer
-  /// @param p_object Points at the block whose Chunk memory space must be found
-  /// @return Chunk* Points at the Chunk object that allocated the object ponted to by p_object
-  Chunk* FindChunkOwner(void* p_object) const noexcept;
-
   /// @brief Perform the deallocation of block pointed to by p_object. The block must lie in the memory space of the
   /// Chunk pointed to by p_lru_dealloc_chunk_
   /// @param p_object Points at the block whose memory to free

@@ -3,6 +3,8 @@
 #include <cassert>
 #include <limits>
 
+#include "AllocatorUtility.hpp"
+
 namespace alloc {
 
 FixedAllocator::FixedAllocator(size_t block_size) noexcept
@@ -68,10 +70,11 @@ void* FixedAllocator::Allocate() noexcept {
 
 void FixedAllocator::Deallocate(void* p_object) noexcept {
   assert(!chunks_.empty());
+  assert(p_lru_dealloc_chunk_ != nullptr);
 
   // Linearly search for a Chunk to which p_object belongs to starting at p_lru_dealloc_chunk_ and search
   // outwards
-  p_lru_dealloc_chunk_ = FindChunkOwner(p_object);
+  p_lru_dealloc_chunk_ = util::FindChunkOwner(p_object, *p_lru_dealloc_chunk_, chunks_);
 
   assert(p_lru_dealloc_chunk_ != nullptr);
 
@@ -79,52 +82,6 @@ void FixedAllocator::Deallocate(void* p_object) noexcept {
 }
 
 size_t FixedAllocator::getBlockSize() const noexcept { return block_size_; }
-
-Chunk* FixedAllocator::FindChunkOwner(void* p_object) const noexcept {
-  assert(!chunks_.empty());
-  assert(p_lru_dealloc_chunk_ != nullptr);
-
-  auto* p_lo_chunk       = p_lru_dealloc_chunk_;
-  auto* p_hi_chunk       = p_lru_dealloc_chunk_ + 1;
-  auto* p_lo_chunk_bound = &chunks_.front();
-  auto* p_hi_chunk_bound = &chunks_.back() + 1;
-
-  // special case: p_lru_dealloc_chunk_ is the last Chunk in the vector
-  if (p_hi_chunk == p_hi_chunk_bound) {
-    p_hi_chunk = nullptr;
-  }
-
-  // Search outward in chunks_
-  for (;;) {
-    if (p_lo_chunk != nullptr) {
-      // p_object lies in the address space of a Chunk pointed to by p_lo_chunk
-      if (p_lo_chunk->IsInChunk(p_object)) {
-        return p_lo_chunk;
-      }
-
-      if (p_lo_chunk == p_lo_chunk_bound) {
-        p_lo_chunk = nullptr;
-      } else {
-        --p_lo_chunk;
-      }
-    }
-
-    if (p_hi_chunk != nullptr) {
-      // p_object lies in the address space of a Chunk pointed to by p_hi_chunk
-      if (p_hi_chunk->IsInChunk(p_object)) {
-        return p_hi_chunk;
-      }
-      if (++p_hi_chunk == p_hi_chunk_bound) {
-        p_hi_chunk = nullptr;
-      }
-    }
-  }
-
-  // should never reach here because a Chunk owner MUST exist since that is the only way for a pointer to a Chunk to
-  // have been given out (ie an allocation must have happened)
-  assert(false);
-  return nullptr;
-}
 
 void FixedAllocator::DoDeallocate(void* p_object) noexcept {
   assert(p_lru_dealloc_chunk_->IsInChunk(p_object));
