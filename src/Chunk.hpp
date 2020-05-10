@@ -22,8 +22,8 @@ class Chunk {
 
   /// @brief Allocate memory and return a pointer to it to the client
   /// @param block_size Size of the block to allocate memory for
-  /// @return void* Returns a pointer to a block of size block_size (in bytes). Returns a nullptr
-  /// if no free memory exists or if the memory has not been initialized with the Init call.
+  /// @return void* Returns a pointer to a block of size block_size (in bytes). Returns a nullptr if no free memory
+  /// exists or if the memory has not been initialized with the Init call.
   void* Allocate(size_t block_size) noexcept;
 
   /// @brief Deallocate memory and add back to pool
@@ -40,7 +40,7 @@ class Chunk {
   /// @return bool Returns true if the block is in this Chunk's memory. False, otherwise.
   bool IsInChunk(const void* p_block) const noexcept;
 
-  /// @brief
+  /// @brief Return the number of memory blocks available in this Chunk
   /// @return uint8_t
   uint8_t GetNumBlocksAvailable() const noexcept;
 
