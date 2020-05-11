@@ -10,6 +10,10 @@ class ChunkManager {
   /// @param block_size The size of blocks (in bytes) allocated by managed Chunks
   explicit ChunkManager(size_t block_size) noexcept;
 
+  ChunkManager(ChunkManager&&) noexcept = default;
+
+  ChunkManager& operator=(ChunkManager&&) noexcept = default;
+
   /// @brief Release all Chunk objects to OS
   ~ChunkManager() noexcept;
 
@@ -41,10 +45,8 @@ class ChunkManager {
   Chunk* FindChunkOwner(void* p_block, Chunk& starting_chunk) const noexcept;
 
   /// Deleted to prevent misuse
-  ChunkManager(const ChunkManager&)     = delete;
-  ChunkManager(ChunkManager&&) noexcept = delete;
+  ChunkManager(const ChunkManager&) = delete;
   ChunkManager& operator=(const ChunkManager&) = delete;
-  ChunkManager& operator=(ChunkManager&&) noexcept = delete;
 
  private:
   /// The default size (in bytes) of a Chunk
@@ -58,10 +60,10 @@ class ChunkManager {
   Chunks chunks_;
 
   /// Size of each block (in bytes)
-  const size_t block_size_;
+  size_t block_size_;
 
   /// The number of blocks a Chunk of size kDefaultChunkSize can hold
-  const uint8_t num_blocks_;
+  uint8_t num_blocks_;
 };
 
 }  // namespace alloc
