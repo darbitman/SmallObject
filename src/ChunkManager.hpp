@@ -44,13 +44,13 @@ class ChunkManager {
   /// The default size (in number of Chunks) for the container of Chunks
   static constexpr size_t kDefaultNumberOfChunks = 100;
 
+  Chunks chunks_;
+
   /// Size of each block (in bytes)
   const size_t block_size_;
 
   /// The number of blocks a Chunk of size kDefaultChunkSize can hold
   uint8_t num_blocks_;
-
-  Chunks chunks_;
 };
 
 }  // namespace alloc
