@@ -5,19 +5,10 @@
 
 namespace alloc {
 
-ChunkManager::ChunkManager(size_t block_size) noexcept : block_size_(block_size) {
+ChunkManager::ChunkManager(size_t block_size) noexcept
+    : block_size_(block_size), num_blocks_(ComputeNumBlocks(block_size)) {
   assert(block_size_ > 0);
-
-  auto num_blocks = kDefaultChunkSize / block_size_;
-
-  assert(num_blocks > 0);
-
-  // clamp number of blocks in each Chunk
-  if (num_blocks > std::numeric_limits<uint8_t>::max()) {
-    num_blocks = std::numeric_limits<uint8_t>::max();
-  }
-
-  num_blocks_ = static_cast<uint8_t>(num_blocks);
+  assert(num_blocks_ > 0);
 
   chunks_.reserve(kDefaultNumberOfChunks);
 }
@@ -55,8 +46,15 @@ Chunk& ChunkManager::FindFreeChunk() noexcept {
 }
 
 Chunk& ChunkManager::CreateNewChunk() noexcept {
-  // a Chunk with a free block was not found, so create a new Chunk
+  // create a new Chunk and move it to the front
   auto& chunk = chunks_.emplace_back();
+
+  // if first Chunk, then return it
+  if (chunks_.size() == 1) {
+    chunks_.front().Init(block_size_, num_blocks_);
+  } else {
+    //
+  }
 
   // initialize it
   chunk.Init(block_size_, num_blocks_);
@@ -116,6 +114,19 @@ Chunk* ChunkManager::FindChunkOwner(void* p_block, Chunk& starting_chunk) const 
   // have been given out (ie an allocation must have happened)
   assert(false);
   return nullptr;
+}
+
+uint8_t ChunkManager::ComputeNumBlocks(size_t block_size) const noexcept {
+  const auto num_blocks = kDefaultChunkSize / block_size;
+
+  assert(num_blocks > 0);
+
+  // clamp number of blocks in each Chunk
+  if (num_blocks > std::numeric_limits<uint8_t>::max()) {
+    return std::numeric_limits<uint8_t>::max();
+  }
+
+  return static_cast<uint8_t>(num_blocks);
 }
 
 }  // namespace alloc
