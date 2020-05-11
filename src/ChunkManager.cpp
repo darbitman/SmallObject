@@ -24,6 +24,8 @@ ChunkManager::ChunkManager(size_t block_size) noexcept : block_size_(block_size)
 
 size_t ChunkManager::GetBlockSize() const noexcept { return block_size_; }
 
+uint8_t ChunkManager::GetNumBlocks() const noexcept { return num_blocks_; }
+
 Chunk& ChunkManager::FindFreeChunk() noexcept {
   for (auto& chunk : chunks_) {
     // if a Chunk with a free block was found, return it

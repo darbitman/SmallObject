@@ -12,6 +12,8 @@ class ChunkManager {
 
   size_t GetBlockSize() const noexcept;
 
+  uint8_t GetNumBlocks() const noexcept;
+
   Chunk& FindFreeChunk() noexcept;
 
   /// @brief Finds the Chunk that performed a memory allocation for a block pointed to by p_block. This Chunk is one
