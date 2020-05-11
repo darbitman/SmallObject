@@ -16,6 +16,8 @@ class ChunkManager {
 
   Chunk& FindFreeChunk() noexcept;
 
+  Chunk& CreateNewChunk() noexcept;
+
   /// @brief Finds the Chunk that performed a memory allocation for a block pointed to by p_block. This Chunk is one
   /// of potentially many managed by this ChunkManager
   /// @param p_block Points at a block that was allocated by a Chunk managed by this ChunkManager

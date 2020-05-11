@@ -45,6 +45,10 @@ Chunk& ChunkManager::FindFreeChunk() noexcept {
     }
   }
 
+  return CreateNewChunk();
+}
+
+Chunk& ChunkManager::CreateNewChunk() noexcept {
   // a Chunk with a free block was not found, so create a new Chunk
   auto& chunk = chunks_.emplace_back();
 
