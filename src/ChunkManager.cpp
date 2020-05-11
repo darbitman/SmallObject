@@ -22,6 +22,12 @@ ChunkManager::ChunkManager(size_t block_size) noexcept : block_size_(block_size)
   chunks_.reserve(kDefaultNumberOfChunks);
 }
 
+ChunkManager::~ChunkManager() noexcept {
+  for (auto& chunk : chunks_) {
+    chunk.Release();
+  }
+}
+
 size_t ChunkManager::GetBlockSize() const noexcept { return block_size_; }
 
 uint8_t ChunkManager::GetNumBlocks() const noexcept { return num_blocks_; }
