@@ -14,16 +14,14 @@ class FixedAllocator {
   /// @param block_size Size of objects (in bytes)
   explicit FixedAllocator(size_t block_size) noexcept;
 
-  /// @brief
   FixedAllocator(FixedAllocator&&) noexcept = default;
 
-  /// @brief
   FixedAllocator& operator=(FixedAllocator&&) noexcept = default;
 
-  /// @brief
   ~FixedAllocator() noexcept = default;
 
   /// @brief Allocate memory and return pointer to the block of memory
+  /// @return void* Pointer to the block of memory allocated
   void* Allocate() noexcept;
 
   /// @brief Return memory back to Chunk handler
@@ -31,18 +29,13 @@ class FixedAllocator {
   void Deallocate(void* p_object) noexcept;
 
   /// @brief Return the size (in bytes) of the objects that this FixedAllocator allocates
-  size_t getBlockSize() const noexcept;
+  size_t GetBlockSize() const noexcept;
 
   /// Deleted to prevent misuse
   FixedAllocator(const FixedAllocator&) noexcept = delete;
   FixedAllocator& operator=(const FixedAllocator&) noexcept = delete;
 
  private:
-  /// @brief Perform the deallocation of block pointed to by p_object. The block must lie in the memory space of the
-  /// Chunk pointed to by p_lru_dealloc_chunk_
-  /// @param p_object Points at the block whose memory to free
-  void DoDeallocate(void* p_object) noexcept;
-
   /// LRU chunk that handled an allococation
   Chunk* p_lru_alloc_chunk_;
 

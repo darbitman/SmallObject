@@ -41,7 +41,7 @@ class ChunkManager {
   /// @param starting_chunk Should be a reference to a Chunk in this ChunkManager. This provides a good starting point
   /// if the client keeps track of LRU Chunks. If this information is not kept, then a reference to any Chunk managed by
   /// this ChunkManager can be passed in.
-  /// @return Chunk* A valid Chunk that allocated the memory pointed to by p_block.
+  /// @return Chunk* A pointer to a valid Chunk that allocated the memory pointed to by p_block.
   Chunk* FindChunkOwner(void* p_block, Chunk& starting_chunk) const noexcept;
 
   /// Deleted to prevent misuse
