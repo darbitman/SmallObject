@@ -4,7 +4,7 @@
 #include <limits>
 
 #include "AllocatorUtility.hpp"
-#include "Optimization.hpp"
+#include "BranchOptimization.hpp"
 
 namespace alloc {
 
