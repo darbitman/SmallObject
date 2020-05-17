@@ -4,15 +4,15 @@ namespace alloc {
 
 Chunk::Chunk() noexcept : p_data_(nullptr), p_data_end_(nullptr), next_available_block_(0), blocks_available_(0) {}
 
-void Chunk::Init(size_t block_size, uint8_t num_blocks_) noexcept {
+void Chunk::Init(size_t block_size, uint8_t num_blocks) noexcept {
   // allocate new memory
-  p_data_ = new uint8_t[block_size * num_blocks_];
+  p_data_ = new uint8_t[block_size * num_blocks];
 
   // update data end pointer. Points at past-the-end block
-  p_data_end_ = p_data_ + (block_size * num_blocks_);
+  p_data_end_ = p_data_ + (block_size * num_blocks);
 
   // initialize blocks
-  Reset(block_size, num_blocks_);
+  Reset(block_size, num_blocks);
 }
 
 void* Chunk::Allocate(size_t block_size) noexcept {
@@ -40,13 +40,13 @@ void Chunk::Deallocate(void* p_block, size_t block_size) noexcept {
   ++blocks_available_;
 }
 
-void Chunk::Reset(size_t block_size, uint8_t num_blocks_) {
+void Chunk::Reset(size_t block_size, uint8_t num_blocks) {
   next_available_block_ = 0;
 
-  blocks_available_ = num_blocks_;
+  blocks_available_ = num_blocks;
 
   uint8_t* p_data = p_data_;
-  for (uint8_t i = 0; i < num_blocks_; p_data += block_size) {
+  for (uint8_t i = 0; i < num_blocks; p_data += block_size) {
     // assign first byte in each block to the index of the next block (ie contiguous linked list)
     // last block's 'pointer' points at past-the-end block
     *p_data = ++i;
