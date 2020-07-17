@@ -2,3 +2,5 @@ BasedOnStyle: Google
 ColumnLimit: 120
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
+PointerAlignment: Left
+DerivePointerAlignment: false
