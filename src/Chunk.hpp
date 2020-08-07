@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include <memory>
 
 namespace alloc {
 
@@ -55,7 +56,7 @@ class Chunk {
   void Reset(size_t block_size, uint8_t num_blocks);
 
   /// Points to the beginning of the memory space in this Chunk
-  uint8_t* p_data_;
+  std::unique_ptr<uint8_t[]> p_data_;
 
   /// Points to the block past the last one in memory
   const uint8_t* p_data_end_;
